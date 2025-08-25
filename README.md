@@ -1,0 +1,1 @@
+This is OneRoof , an user frindly platform where you can book hotels, hostels, pg or even list them as well. We prioritize custom satisfaction and customer privacy. 
