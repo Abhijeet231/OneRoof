@@ -27,5 +27,33 @@ const registerUser = asyncHandler(async(req,res) => {
 
     const{userName, email, fullName, password } = req.body;
 
+    //Checkign Duplicate Users
+    const existedUser = await User.findOne({
+        $or:[{userName, email}]
+    });
+   
+    if(existedUser){
+        throw new ApiError(409, "User Already Exists")
+    };
+
+    //Creating User and saving it to DB
+    const user = await User.create({
+        userName,
+        email,
+        fullName,
+        password
+    });
+
+    const createdUser = await User.findById(user._id).select("-password -refreshToken");
+
+    if(!createdUser){
+        throw new ApiError(500, "Something Went Wrong While Registering the User!!")
+    };
+
+    const newResponse = new ApiResponse(200, createdUser, "User Registered Successfully");
+
+    return res.status(newResponse.statusCode).json(newResponse);
     
-})
+
+});
+    
