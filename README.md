@@ -45,8 +45,8 @@ OneRoof is a full-stack booking platform (inspired by Airbnb) where users can ex
 
 ### **Frontend**
 
-* React.js (Next.js optional)
-* TailwindCSS / 
+* React.js 
+* TailwindCSS  
 * Context API for state management
 
 ### **Backend**
