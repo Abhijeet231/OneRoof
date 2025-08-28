@@ -1,9 +1,9 @@
 import {asyncHandler} from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js";
-import {User} from "../models/user.model.js";
-import {uploadOnCloudinary} from "../utils/cloudinary.js";
+import User from "../models/user.model.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+
 
 
 
@@ -26,6 +26,8 @@ const generateAccessAndRefreshToken = async(userId) => {
 //Register User
 const registerUser = asyncHandler(async(req,res) => {
 
+    console.log("Incoming Body:", req.body);
+    
     const{userName, email, fullName, password } = req.body;
 
     //Checkign Duplicate Users
@@ -185,5 +187,6 @@ const refreshAccessToken = asyncHandler(async(req,res) => {
 export {
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    refreshAccessToken
 }
