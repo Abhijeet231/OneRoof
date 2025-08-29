@@ -16,12 +16,12 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-//Register User Routes
+// User Routes
 import userRouter from "./routes/user.router.js";
 app.use('/api/v1/users', userRouter);
 
-
-
-
+// Listing Routes
+import listingRouter from "./routes/listing.router.js";
+app.use('/api/v1/listings', listingRouter);
 
 export default app ;

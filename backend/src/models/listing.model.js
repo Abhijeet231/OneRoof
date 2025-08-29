@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Review from "./review.model";
-import { string } from "joi";
+import Review from "./review.model.js";
+
 
 
 const listingSchema = new mongoose.Schema({
@@ -16,8 +16,7 @@ const listingSchema = new mongoose.Schema({
     image: {
         
        url: { type: String,required: true},
-       public_id: {type: string, required: true}
-        
+       public_id: {type: String, required: true}
     },
     price: {
         type: Number,

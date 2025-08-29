@@ -44,4 +44,7 @@ router.delete(
     verifyJWT,
     deleteListing
     
-)
+);
+
+
+export default router
