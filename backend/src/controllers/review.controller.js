@@ -173,3 +173,8 @@ const updateReview = asyncHandler(async (req, res) => {
     }
  })
 
+export {
+  createReview,
+  updateReview,
+  deleteReview
+};
