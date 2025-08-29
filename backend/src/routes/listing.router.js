@@ -19,7 +19,7 @@ const router = Router();
 
 //Create New Listing
 router.post(
-  "/listings",
+  "/",
   verifyJWT,
   validate(createListingSchema),
 
@@ -29,7 +29,7 @@ router.post(
 
 //Update Listing
 router.put(
-  "/listings/:id",
+  "/:id",
   verifyJWT,
   validate(updateListingSchema),
 
@@ -40,7 +40,7 @@ router.put(
 
 //Delete Listing
 router.delete(
-    "/listings/:id",
+    "/:id",
     verifyJWT,
     deleteListing
     
