@@ -60,3 +60,10 @@ OneRoof is a full-stack booking platform (inspired by Airbnb) where users can ex
 
 * Vercel / Netlify (Frontend hosting)
 * Render  (Backend hosting)
+
+
+🚧🚧 NOTE 🚧🚧
+This project is still under construction. 
+Not all features are ready, but i am working hard to make the foundation strong. 
+
+Feedback and suggestions are welcome. 
