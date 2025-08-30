@@ -31,7 +31,7 @@ const createReview = asyncHandler(async (req, res) => {
       throw new ApiError(400, "You have already reviewed this property");
     }
 
-    // 3. Create review
+    // 3. Create new  review
     const review = new Review({
       comment,
       rating,
@@ -173,8 +173,48 @@ const updateReview = asyncHandler(async (req, res) => {
     }
  })
 
+//Get all reviews for a listing
+const getAllReviewForListing = asyncHandler(async(req,res) => {
+  const {listingId} = req.params;
+
+  const listing = await Listing.findById(listingId).populate(
+    {
+      path: "reviews",
+      populate:{path:"author", select: "userName email"}
+    }
+  );
+
+  if(!listing){
+    throw new ApiError(404, "Listing Not Found")
+  };
+
+  return res.status(200).json(new ApiResponse(200, "Review Fetched Successfully", listing.reviews))
+
+});
+/////////////////////////////////////////////////////////////////////////
+
+//Get Individual Review
+const getReviewById = asyncHandler(async(req,res) => {
+  const {reviewId} = req.params;
+
+  const review = await Review.findById(reviewId).populate(
+    "author",
+    "userName email"
+  );
+
+  if(!review){
+    throw new ApiError(404, "Review Not Found")
+  };
+
+  return res.status(200).json(new ApiResponse(200, "Review Fetched Successfully", review));
+
+})
+
+
 export {
   createReview,
   updateReview,
-  deleteReview
+  deleteReview,
+  getAllReviewForListing,
+  getReviewById 
 };

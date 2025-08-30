@@ -2,7 +2,9 @@ import { Router } from "express";
 import{
     createReview,
   updateReview,
-  deleteReview
+  deleteReview,
+  getAllReviewForListing,
+  getReviewById
 } from "../controllers/review.controller.js";
 
 import verifyJWT from "../middleware/auth.middleware.js";
@@ -12,32 +14,22 @@ import {
     createReviewSchema,
     updateReviewSchema
 } from "../validators/review.validator.js";
-import Listing from "../models/listing.model.js";
+
+
 
 const router = Router();
 
-//Create Review
-router.post(
-    "/",
-    verifyJWT,
-    validate(createReviewSchema),
-    createReview
-);
+router.route("/")
+.get(getAllReviewForListing)
+.post(verifyJWT, validate(createReviewSchema), createReview)
 
-//Update Review
-router.put(
-    "/:reviewId",
-    verifyJWT,
-    validate(updateReviewSchema),
-    updateReview
-);
 
-//Delete Review
-router.delete(
-    "/:reviewId",
-    verifyJWT,
-    deleteReview
-);
+router.route("/:reviewId")
+.get(getReviewById)
+.put(verifyJWT, validate(updateReviewSchema), updateReview)
+.delete(verifyJWT, deleteReview)
+
+
 
 
 export default router;

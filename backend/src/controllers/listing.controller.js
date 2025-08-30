@@ -5,6 +5,31 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 
 
+
+//Get All Listing
+const getAllListing = asyncHandler(async(req,res) => {
+    const listings = await Listing.find().populate("owner", "userName email");
+
+    res.status(200)
+    .json(new ApiResponse(200, "All Listing Fetched", listings));
+});
+
+//Get Single Listing
+const getListingsById = asyncHandler(async(req,res) => {
+    const {id} = req.params;
+
+    const listing = await Listing.findById(id).populate("owner", "userName email");
+    if(!listing){
+        throw new ApiError(404, "Listing not Found");
+    }
+
+    res.status(200)
+    .json(new ApiResponse(200, "Listing Fetched Successfully", listing))
+});
+
+
+
+
 //Create New Listing
 const createListing = asyncHandler(async(req,res) => {
     
@@ -115,6 +140,8 @@ const deleteListing = asyncHandler(async(req,res) => {
 
 
 export {
+    getAllListing,
+    getListingsById,
     createListing,
     updateListing,
     deleteListing

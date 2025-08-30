@@ -1,5 +1,7 @@
 import { Router } from "express";
 import {
+  getAllListing,
+  getListingsById,
   createListing,
   updateListing,
   deleteListing
@@ -17,34 +19,30 @@ import { upload } from "../middleware/multer.middleware.js";
 
 const router = Router();
 
-//Create New Listing
-router.post(
-  "/",
-  verifyJWT,
-  validate(createListingSchema),
 
+router.route("/")
+.get(getAllListing)   //Get listing
+.post(
+  verifyJWT,
+  validate(createListingSchema), // Post listing
   upload.single("image"),
   createListing
 );
 
-//Update Listing
-router.put(
-  "/:id",
+
+router.route("/:id")
+.get(getListingsById)
+.put(
   verifyJWT,
   validate(updateListingSchema),
-
   upload.single("image"),
   updateListing
-);
+)
+.delete(
+  verifyJWT,
+  deleteListing
+)
 
-
-//Delete Listing
-router.delete(
-    "/:id",
-    verifyJWT,
-    deleteListing
-    
-);
 
 
 export default router
