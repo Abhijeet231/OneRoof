@@ -12,12 +12,13 @@ import {
     createReviewSchema,
     updateReviewSchema
 } from "../validators/review.validator.js";
+import Listing from "../models/listing.model.js";
 
 const router = Router();
 
 //Create Review
 router.post(
-    "/:id/reviews",
+    "/",
     verifyJWT,
     validate(createReviewSchema),
     createReview
@@ -25,7 +26,7 @@ router.post(
 
 //Update Review
 router.put(
-    "/:id/reviews/:reviewId",
+    "/:reviewId",
     verifyJWT,
     validate(updateReviewSchema),
     updateReview
@@ -33,7 +34,10 @@ router.put(
 
 //Delete Review
 router.delete(
-    "/:id/reviews/:reviewId",
+    "/:reviewId",
     verifyJWT,
     deleteReview
 );
+
+
+export default router;

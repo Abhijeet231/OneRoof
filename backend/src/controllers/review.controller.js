@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import Listing from "../models/listing.model.js";
 import Review from "../models/review.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 // Create new Review
 const createReview = asyncHandler(async (req, res) => {
@@ -12,11 +12,11 @@ const createReview = asyncHandler(async (req, res) => {
 
   try {
     const { comment, rating } = req.body;
-    const { id } = req.params;
+    const { listingId } = req.params;
     const userId = req.user._id;
 
     // 1. Find parent listing
-    const listing = await Listing.findById(id).session(session);
+    const listing = await Listing.findById(listingId).session(session);
     if (!listing) {
       throw new ApiError(404, "Listing Not Found");
     }
@@ -70,11 +70,11 @@ const updateReview = asyncHandler(async (req, res) => {
 
   try {
     const { comment, rating } = req.body;
-    const { id } = req.params;
+    const { reviewId } = req.params;
     const userId = req.user._id;
 
     // 1. Find review
-    const review = await Review.findById(id).session(session);
+    const review = await Review.findById(reviewId).session(session);
     if (!review) {
       throw new ApiError(404, "Review Not Found");
     }
@@ -125,17 +125,17 @@ const updateReview = asyncHandler(async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try{
-        const {id} = req.params; //review id
+        const {reviewId} = req.params; //review id
         const userId = req.user._id;
 
         //Find review
-        const review = await Review.findById(id).session(session);
+        const review = await Review.findById(reviewId).session(session);
         if(!review){
             throw new ApiError(404, 'Review Not Found')
         };
 
         //Find the listing that contains this review
-        const listing = await Listing.findOne({reviews: id}).session(session);
+        const listing = await Listing.findOne({reviews: reviewId}).session(session);
         if(!listing){
             throw new ApiError(404, "Parent Listing not found for this review")
         };
@@ -149,10 +149,10 @@ const updateReview = asyncHandler(async (req, res) => {
         };
 
         //Delete Review from collection
-        await Review.findByIdAndDelete(id, {session});
+        await Review.findByIdAndDelete(reviewId, {session});
 
         //Remove review reference from listing
-        listing.reviews.pull(id);
+        listing.reviews.pull(reviewId);
         await listing.save({session});
 
         //Commit transaction

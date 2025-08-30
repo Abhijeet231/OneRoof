@@ -24,4 +24,8 @@ app.use('/api/v1/users', userRouter);
 import listingRouter from "./routes/listing.router.js";
 app.use('/api/v1/listings', listingRouter);
 
+//Review Routes
+import reviewRouter from "./routes/review.router.js";
+app.use('/api/v1/listings/:listingId/reviews', reviewRouter);
+
 export default app ;
