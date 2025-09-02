@@ -1,10 +1,13 @@
+import Navbar from "./components/Navvar";
+import Body from "./components/Body";
 
 
 function App() {
  
   return (
     <>
-    <h1>Hellow </h1>
+    <Navbar/>
+    <Body/>
    </>
 
   )

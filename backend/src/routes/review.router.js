@@ -16,8 +16,9 @@ import {
 } from "../validators/review.validator.js";
 
 
+const router = Router({ mergeParams: true }); // important as this is a nested route
 
-const router = Router();
+
 
 router.route("/")
 .get(getAllReviewForListing)
