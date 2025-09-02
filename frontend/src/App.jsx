@@ -1,5 +1,5 @@
-import Navbar from "./components/Navvar";
-import Body from "./components/Body";
+import Navbar from "./components/Navbar.jsx";
+import {Outlet} from "react-router-dom";
 
 
 function App() {
@@ -7,7 +7,7 @@ function App() {
   return (
     <>
     <Navbar/>
-    <Body/>
+    <Outlet/>
    </>
 
   )
