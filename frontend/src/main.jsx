@@ -6,9 +6,9 @@ import "@fortawesome/fontawesome-free/css/all.min.css"
 
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 
-import Body from './components/Body.jsx';
-import Login from './components/Login.jsx';
-import Register from './components/Register.jsx'
+import Body from './components/body/Body.jsx';
+import Login from './components/header/Login.jsx';
+import Register from './components/header/Register.jsx'
 
 
 const appRouter = createBrowserRouter([

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Card from "./Card.jsx";
+import Card from "../body/Card.jsx";
 
 
 const Body = () => {
