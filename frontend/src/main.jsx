@@ -9,12 +9,14 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import Body from './components/body/Body.jsx';
 import Login from './components/header/Login.jsx';
 import Register from './components/header/Register.jsx'
+import Error from './components/Error.jsx'
 
 
 const appRouter = createBrowserRouter([
   {
     path: "/",
     element: <App/>,
+    errorElement: <Error/>,
     children:[
       {
         index: true, //default child route
