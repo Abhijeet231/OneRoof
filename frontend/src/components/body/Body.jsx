@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import Card from "../body/Card.jsx";
+import Card from "../card/Card.jsx";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 
 const Body = () => {
@@ -8,15 +10,17 @@ const Body = () => {
     useEffect(() => {
     const fetchData = async() => {
        try {
-         let data = await fetch("http://localhost:8000/api/v1/listings");
-         let jsonData = await data.json();
-         setListings(jsonData.message);
-         console.log(jsonData);
-       } catch (error) {
-        console.log(error, "Error While Fetching Listings");
-        
-       }
+         const res = await axios.get("http://localhost:8000/api/v1/listings");
+         setListings(res.data.message);
+         console.log(res.data);
+         
+        } catch (error) {
+            console.log(error.response?.data || error.message, "Error While Fetching Listingsxxxxx");
+            toast.error(`⚠️ ${error.message}` || "Error While Fetching data from backend")
+
+        }
     };
+        
 
     fetchData();
         

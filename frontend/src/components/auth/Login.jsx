@@ -3,9 +3,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../schemas/loginSchema.js";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import {useAuth} from "../provider/AuthProvider.jsx"
+
 
 const Login = () => {
   const navigate = useNavigate();
+  const {setToken} = useAuth();
 
   const {
     register,
@@ -18,17 +22,11 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await fetch("http://localhost:8000/api/v1/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    const res = await axios.post("http://localhost:8000/api/v1/users/login", data, {withCredentials: true});
 
-      const result = await res.json();
+      const result = res.data; // this is the parsed data from axios 
 
-      if (!res.ok) {
-        throw new Error(result.message || "Failed to login user");
-      }
+     setToken(result.accessToken);
 
       toast.success("🎉 Logged in successfully!");
       console.log("LOGGED IN USER:", result);

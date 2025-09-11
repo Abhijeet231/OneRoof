@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {registerUser, loginUser, logoutUser } from "../controllers/user.controller.js";
+import {registerUser, loginUser, logoutUser, refreshAccessToken } from "../controllers/user.controller.js";
 import verifyJWT from "../middleware/auth.middleware.js";
 import validate from "../middleware/validate.middleware.js";
 import { loginSchema, signupSchema } from "../validators/user.validator.js"
@@ -14,5 +14,8 @@ router.post('/login', validate(loginSchema), loginUser);
 
 //Logout user (Protected route)
 router.post('/logout', verifyJWT, logoutUser);
+
+//Refresh token
+router.get('/refresh', refreshAccessToken);
 
 export default router;
