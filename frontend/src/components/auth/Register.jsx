@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@/schemas/registerSchema";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import api from "@/lib/api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -17,22 +18,13 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await fetch("http://localhost:8000/api/v1/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const result = await res.json();
-
-      if (!res.ok) {
-        throw new Error(result.message || "Failed to register user");
-      }
+      const result = await api.post("/users/register", data); // data is sent as JSON automatically
 
       toast.success("🎉 User registered successfully!");
-      console.log("REGISTERED USER:", result);
-         
+      console.log("REGISTERED USER:", result.data);
+
       setTimeout(() => {
-        navigate("/login")
+        navigate("/login");
       }, 500);
 
       reset();
@@ -43,9 +35,7 @@ const Register = () => {
   };
 
   return (
-   <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-green-50 via-orange-100 to-orange-200">
-
-
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-green-50 via-orange-100 to-orange-200">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Create an Account
@@ -136,7 +126,10 @@ const Register = () => {
 
         <p className="mt-6 text-sm text-center text-gray-600">
           Already have an account?{" "}
-          <a href="/login" className="text-green-600 hover:underline font-medium">
+          <a
+            href="/login"
+            className="text-green-600 hover:underline font-medium"
+          >
             Login
           </a>
         </p>

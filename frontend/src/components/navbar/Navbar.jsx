@@ -1,16 +1,14 @@
-
-
-
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/provider/AuthProvider"; // adjust path if needed
 
 const Navbar = () => {
-
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
-   <nav className="bg-white shadow-md px-4 sm:px-6 lg:px-10 py-3 relative">
+    <nav className="bg-white shadow-md px-4 sm:px-6 lg:px-10 py-3 relative">
       <div className="flex items-center justify-between">
         {/* Logo */}
         <Link to="/">
@@ -36,12 +34,11 @@ const Navbar = () => {
 
         {/* Right Section */}
         <div className="flex items-center space-x-3">
-          {/* Host Button (still visible on desktop) */}
+          {/* Host Button */}
           <NavLink
             to="/host"
             className="px-4 py-2 rounded-lg font-medium bg-gradient-to-r from-green-600 to-orange-400 text-white hover:opacity-90 transition"
           >
-          
             Host with OneRoof
           </NavLink>
 
@@ -57,29 +54,56 @@ const Navbar = () => {
             {/* Dropdown */}
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2 z-50">
-                <NavLink
-                  to="/login"
-                  className="block px-4 py-2 text-gray-700 hover:bg-green-50"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  Login
-                </NavLink>
-                <NavLink
-                  to="/register"
-                  className="block px-4 py-2 text-gray-700 hover:bg-green-50"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  Register
-                </NavLink>
+                {isAuthenticated ? (
+                  <>
+                    <NavLink
+                      to="/profile"
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-50"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Profile
+                    </NavLink>
+                    <NavLink
+                      to="/settings"
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-50"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Settings
+                    </NavLink>
+                    <button
+                      onClick={async() => {
+                       await logout();
+                      setDropdownOpen(false);
+                      navigate("/");
+                      }}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-green-50"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <NavLink
+                      to="/login"
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-50"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Login
+                    </NavLink>
+                    <NavLink
+                      to="/register"
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-50"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Register
+                    </NavLink>
+                  </>
+                )}
               </div>
             )}
           </div>
-
-         
         </div>
       </div>
-
-    
     </nav>
   );
 };

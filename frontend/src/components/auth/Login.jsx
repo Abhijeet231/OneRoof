@@ -26,8 +26,9 @@ const Login = () => {
     const res = await api.post("/users/login", data);
 
       const result = res.data; // this is the parsed data from axios 
+      if(!result) throw new Error("No Access Token Returned!")
 
-     setToken(result.accessToken);
+     setToken(result.data.accessToken);
 
       toast.success("🎉 Logged in successfully!");
       console.log("LOGGED IN USER:", result);
