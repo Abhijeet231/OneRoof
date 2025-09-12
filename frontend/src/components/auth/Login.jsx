@@ -1,10 +1,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "../schemas/loginSchema.js";
+import { loginSchema } from "@/schemas/loginSchema.js";// this means src/schemas/
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import {useAuth} from "../provider/AuthProvider.jsx"
+import api from "@/lib/api.js"; // this means src/lib/
+import { useAuth } from "@/components/provider/AuthProvider.jsx";// this means src/components
+
 
 
 const Login = () => {
@@ -22,7 +23,7 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-    const res = await axios.post("http://localhost:8000/api/v1/users/login", data, {withCredentials: true});
+    const res = await api.post("/users/login", data);
 
       const result = res.data; // this is the parsed data from axios 
 

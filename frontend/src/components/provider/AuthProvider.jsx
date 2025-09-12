@@ -27,7 +27,7 @@ useEffect(() => {
 useEffect(() => {
     const checkSession = async() => {
         try{
-            const res = await axios. get("http://localhost:8000/api/v1/users/refresh",{}, {withCredentials: true}  );
+            const res = await axios. get("http://localhost:8000/api/v1/users/refresh", {withCredentials: true});
 
             if(res.data?.data?.accessToken){
                 setToken(res.data.data.accessToken);
@@ -53,7 +53,7 @@ useEffect(() => {
           originalRequest._retry = true;
 
           try {
-            const res = await axios.post("http://localhost:8000/api/v1/users/refresh", {}, { withCredentials: true });
+            const res = await axios.post("http://localhost:8000/api/v1/users/refresh", null, { withCredentials: true });
             if (res.data?.data?.accessToken) {
               setToken(res.data.data.accessToken);
               originalRequest.headers["Authorization"] = `Bearer ${res.data.data.accessToken}`;
@@ -78,7 +78,7 @@ useEffect(() => {
 //logout
 const logout = async() => {
     setToken(null);
-    await axios.post("http://localhost:8000/api/v1/users/logout", {}, {withCredentials: true});
+    await axios.post("http://localhost:8000/api/v1/users/logout", null, {withCredentials: true});
 
 };
 
@@ -97,6 +97,7 @@ return <AuthContext.Provider value={contextValue}> {children} </AuthContext.Prov
 
 };
 
-export const useAuth = () => useContext(AuthContext);
-export default AuthProvider;
+ const useAuth = () => useContext(AuthContext);
 
+
+export { useAuth, AuthProvider };

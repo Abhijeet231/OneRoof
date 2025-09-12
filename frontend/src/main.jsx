@@ -6,10 +6,15 @@ import "@fortawesome/fontawesome-free/css/all.min.css"
 
 import { RouterProvider} from 'react-router-dom';
 import router from './routes/index.jsx'
+import {AuthProvider} from "./components/provider/AuthProvider.jsx"
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router = {router}   />
+
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+    
   </StrictMode>,
 )

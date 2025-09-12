@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Card from "../card/Card.jsx";
+import Card from "@/components/card/Card.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";
 
