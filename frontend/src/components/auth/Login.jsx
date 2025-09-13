@@ -35,7 +35,7 @@ const Login = () => {
 
       setTimeout(() => {
         navigate("/");
-      }, 800);
+      }, 700);
 
       reset();
     } catch (error) {
@@ -47,7 +47,8 @@ const Login = () => {
   return (
    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-orange-200 via-orange-100 to-green-50">
 
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-green-100">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-green-100"> 
+        {/* //border duplicate here  */}
     <h2 className="text-2xl font-medium text-center text-emerald-800 mb-5">
   Welcome Back
 </h2>

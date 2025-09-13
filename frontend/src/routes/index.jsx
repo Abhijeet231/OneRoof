@@ -7,6 +7,7 @@ import Error from "@/components/Error";
 import ProtectedRoute from "@/routes/ProtectedRoutes";
 import AccountSetting from "@/components/accountSetting/AccountSetting";
 import Profile from "@/components/profile/Profile";
+import CreateListing from "@/components/createListing/CreateListing";
 
 
 const router = createBrowserRouter([
@@ -32,7 +33,8 @@ const router = createBrowserRouter([
                 element: <ProtectedRoute/>,
                 children: [
                     {path: "profile", element: <Profile/>},
-                    {path: "settings", element: <AccountSetting/>}
+                    {path: "settings", element: <AccountSetting/>},
+                    {path: "host", element: <CreateListing/>}
                 ],
             },
         ],

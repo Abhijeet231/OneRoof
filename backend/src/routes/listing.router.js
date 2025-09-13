@@ -31,14 +31,14 @@ router.route("/")
 
 
 router.route("/:id")
-.get(getListingsById)
+.get(getListingsById) //Get single listing
 .put(
   verifyJWT,
-  validate(updateListingSchema),
+  validate(updateListingSchema), // Edit listing
   upload.single("image"),
   updateListing
 )
-.delete(
+.delete(                  //Delete Listing
   verifyJWT,
   deleteListing
 )
