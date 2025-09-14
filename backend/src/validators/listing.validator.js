@@ -5,7 +5,6 @@ export const createListingSchema = Joi.object({
 
     title: Joi.string().min(3).max(100).required(),
     description: Joi.string().min(10).required(),
-    image: Joi.string().uri().required(),
     price: Joi.number().greater(0).required(),
     location: Joi.string().required(),
     country: Joi.string().required(),

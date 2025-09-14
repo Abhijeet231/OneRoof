@@ -19,21 +19,35 @@ export const listingSchema = z.object({
   location: z.string({
     required_error: "Location is required",
     invalid_type_error: "Location must be a string",
-  }),
+  }).min(3, "Location Needed!"),
 
   country: z.string({
     required_error: "Country is required",
     invalid_type_error: "Country must be a string",
-  }),
+  }).min(3, "Country required!"),
+
+  // image: z
+  //   .instanceof(File, { message: "Image file is required" })   // ✅ Use instanceof instead of z.custom
+  //   .refine((file) => file.type.startsWith("image/"), {
+  //     message: "File must be an image",
+  //   })
+  //   .refine((file) => file.size <= 5 * 1024 * 1024, {
+  //     message: "Image size must be under 5MB",
+  //   }),
 
   image: z
-    .instanceof(File, { message: "Image file is required" })   // ✅ Use instanceof instead of z.custom
-    .refine((file) => file.type.startsWith("image/"), {
-      message: "File must be an image",
-    })
-    .refine((file) => file.size <= 5 * 1024 * 1024, {
-      message: "Image size must be under 5MB",
-    }),
+  .any()
+  .refine((files) => files instanceof FileList && files.length > 0, {
+    message: "Image is required",
+  })
+  .transform((files) => files[0]) // ✅ converts FileList → File
+  .refine((file) => file.type.startsWith("image/"), {
+    message: "File must be an image",
+  })
+  .refine((file) => file.size <= 5 * 1024 * 1024, {
+    message: "File must be under 5MB",
+  }),
+
  
 });
 

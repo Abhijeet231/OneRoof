@@ -39,7 +39,7 @@ const Navbar = () => {
             to="/host"
             className="px-4 py-2 rounded-lg font-medium bg-gradient-to-r from-green-600 to-orange-400 text-white hover:opacity-90 transition"
           >
-            Host with OneRoof
+            Start Hosting
           </NavLink>}
 
           {/* User Profile Dropdown */}
