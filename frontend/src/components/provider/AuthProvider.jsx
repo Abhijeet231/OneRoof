@@ -1,65 +1,68 @@
-import api from "@/lib/api.js"; // <-- instead of axios
+import api from "@/lib/api.js"; // axios instance with { withCredentials: true }
 import { createContext, useContext, useEffect, useState, useMemo } from "react";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [token, setToken_] = useState(
-    localStorage.getItem("accessToken") || null
-  );
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const setToken = (newToken) => {
-    setToken_(newToken);
-  };
-
-  // Sync token to axios + localStorage
-  useEffect(() => {
-    if (token) {
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      localStorage.setItem("accessToken", token);
-    } else {
-      delete api.defaults.headers.common["Authorization"];
-      localStorage.removeItem("accessToken");
-    }
-  }, [token]);
-
-  // Auto-load session on mount
+  // Load session + user on mount
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const res = await api.post("/users/refresh");
-        if (res.data?.data?.accessToken) {
-          setToken(res.data.data.accessToken);
+        const res = await api.get("/users/me"); // backend verifies cookie
+        if (res.data?.data?.user) {
+          setCurrentUser(res.data.data.user);
+        } else {
+          setCurrentUser(null);
         }
       } catch (err) {
         console.log("No active session", err.message);
+        setCurrentUser(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (!token) checkSession();
+    checkSession();
   }, []);
 
-  // Interceptor for token refresh
+  // Login (backend sets cookies)
+  const login = async (credentials) => {
+    const res = await api.post("/users/login", credentials);
+    if (res.data?.data?.user) {
+      setCurrentUser(res.data.data.user);
+    }
+    return res;
+  };
+
+  // Logout (backend clears cookies + local state)
+  const logout = async () => {
+    await api.post("/users/logout");
+    setCurrentUser(null);
+  };
+
+  // Axios interceptor for automatic token refresh
   useEffect(() => {
     const interceptor = api.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config || {};
+
+        // If access token expired (401) and request not retried yet
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
 
           try {
-            const res = await api.post("/users/refresh");
-            if (res.data?.data?.accessToken) {
-              setToken(res.data.data.accessToken);
-              originalRequest.headers[
-                "Authorization"
-              ] = `Bearer ${res.data.data.accessToken}`;
-              return api(originalRequest); // retry request with new token
-            }
-          } catch (err) {
-            console.error("Refresh failed", err);
-            logout();
+            // Hit refresh endpoint to get a new access token
+            await api.post("/users/refresh");
+
+            // Retry the original request after refresh
+            return api(originalRequest);
+          } catch (refreshError) {
+            console.error("Refresh token failed", refreshError);
+            setCurrentUser(null); // force logout on refresh failure
           }
         }
 
@@ -70,26 +73,24 @@ const AuthProvider = ({ children }) => {
     return () => {
       api.interceptors.response.eject(interceptor);
     };
-  }, [token]);
-
-  // Logout
-  const logout = async () => {
-    setToken(null);
-    await api.post("/users/logout");
-  };
+  }, []);
 
   const contextValue = useMemo(
     () => ({
-      token,
-      setToken,
+      currentUser,
+      setCurrentUser,
+      login,
       logout,
-      isAuthenticated: !!token,
+      isAuthenticated: !!currentUser,
+      loading,
     }),
-    [token]
+    [currentUser, loading]
   );
 
   return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 

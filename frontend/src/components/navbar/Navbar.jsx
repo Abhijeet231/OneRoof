@@ -36,7 +36,7 @@ const Navbar = () => {
         <div className="flex items-center space-x-3">
           {/* Host Button */}
           {isAuthenticated && <NavLink
-            to="/host"
+            to="/listings"
             className="px-4 py-2 rounded-lg font-medium bg-gradient-to-r from-green-600 to-orange-400 text-white hover:opacity-90 transition"
           >
             Start Hosting

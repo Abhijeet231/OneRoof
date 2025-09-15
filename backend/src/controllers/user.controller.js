@@ -83,7 +83,8 @@ const loginUser = asyncHandler(async(req,res) => {
     //Setting Up Cookie Options
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production" 
+        secure: process.env.NODE_ENV === "production" ,
+        sameSite:"strict"
     };
 
     return res
@@ -126,7 +127,8 @@ const user =   await User.findByIdAndUpdate(
 
 const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production"
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict"
 };
 
 return res
@@ -136,6 +138,14 @@ return res
 .json(new ApiResponse(200, {}, "User Logged Out"))
 
 });
+
+//sending User Details
+const getCurrentUser = asyncHandler(async(req,res) => {
+    return res.status(200).json(
+        new ApiResponse(200, {user: req.user}, "Current user fetched Successfully")
+    )
+});
+
 
 //Refresh Access Token
 const refreshAccessToken = asyncHandler(async(req,res) => {
@@ -161,7 +171,7 @@ const refreshAccessToken = asyncHandler(async(req,res) => {
         const options = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "none"
+            sameSite: "strict"
         };
 
         const{accessToken, refreshToken:newRefreshToken} = await generateAccessAndRefreshToken(user._id);
@@ -188,5 +198,6 @@ export {
     registerUser,
     loginUser,
     logoutUser,
+    getCurrentUser,
     refreshAccessToken
 }

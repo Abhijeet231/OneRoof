@@ -8,7 +8,7 @@ export const createListingSchema = Joi.object({
     price: Joi.number().greater(0).required(),
     location: Joi.string().required(),
     country: Joi.string().required(),
-    owner: Joi.string().hex().length(24).required() //must be a valid mongoDb Object
+     //must be a valid mongoDb Object
 
 });
 

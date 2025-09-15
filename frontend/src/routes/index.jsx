@@ -7,7 +7,9 @@ import Error from "@/components/Error";
 import ProtectedRoute from "@/routes/ProtectedRoutes";
 import AccountSetting from "@/components/accountSetting/AccountSetting";
 import Profile from "@/components/profile/Profile";
-import CreateListing from "@/components/createListing/CreateListing";
+import CreateListing from "@/components/listings/CreateListing";
+import ShowListing from "@/components/listings/ShowListing";
+import EditListing from "@/components/listings/EditListing";
 
 
 const router = createBrowserRouter([
@@ -34,8 +36,16 @@ const router = createBrowserRouter([
                 children: [
                     {path: "profile", element: <Profile/>},
                     {path: "settings", element: <AccountSetting/>},
-                    {path: "host", element: <CreateListing/>}
-                ],
+                    {
+                        path: "listings",
+                        children:[
+                            {index: true, element: <CreateListing/>},
+                            {path: ":id", element: <ShowListing/>},
+                            {path:":id/edit", element: <EditListing/>}
+                        ]    
+                    },
+                   
+                ]
             },
         ],
     },

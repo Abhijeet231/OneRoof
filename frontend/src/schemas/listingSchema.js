@@ -52,16 +52,3 @@ export const listingSchema = z.object({
 });
 
 
-
-// need to implement this but for later
-
-    //  image: z
-    // .custom<File>((val) => val instanceof File, {
-    //   message: "An image file is required",
-    // })
-    // .refine((file) => file && file.type.startsWith("image/"), {
-    //   message: "File must be an image",
-    // })
-    // .refine((file) => file && file.size <= 5 * 1024 * 1024, {
-    //   message: "Image size must be under 5MB",
-    // }),

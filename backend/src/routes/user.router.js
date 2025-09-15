@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {registerUser, loginUser, logoutUser, refreshAccessToken } from "../controllers/user.controller.js";
+import {registerUser, loginUser, logoutUser, refreshAccessToken, getCurrentUser } from "../controllers/user.controller.js";
 import verifyJWT from "../middleware/auth.middleware.js";
 import validate from "../middleware/validate.middleware.js";
 import { loginSchema, signupSchema } from "../validators/user.validator.js"
@@ -17,5 +17,8 @@ router.post('/logout', verifyJWT, logoutUser);
 
 //Refresh token
 router.post('/refresh', refreshAccessToken);
+
+//Get User Details
+router.get("/me", verifyJWT, getCurrentUser);
 
 export default router;

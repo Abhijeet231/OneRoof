@@ -2,13 +2,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import api from "@/lib/api";
-import { useAuth } from "../provider/AuthProvider";
 import { listingSchema } from "@/schemas/listingSchema.js";
 import { useNavigate } from "react-router-dom";
 
 const CreateListing = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  
 
   //RHF stuff
   const {
@@ -22,12 +21,24 @@ const CreateListing = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await api.post("/listings", data);
-      const result = res.data;
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("price", data.price);
+      formData.append("location", data.location);
+      formData.append("country", data.country);
 
-      if (!result) {
-        toast.error("Error while Sending NEw listing");
+      if (data.image) {
+        formData.append("image", data.image);
       }
+
+      const res = await api.post("/listings", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const result = res.data;
 
       toast.success("🎉 Listing Created successfully!");
       console.log("New Listing:", result);
@@ -136,6 +147,9 @@ const CreateListing = () => {
                 {...register("image")}
                 className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
+              {errors.image && (
+                <p className="text-red-500 text-sm mt-1"> {errors.image.message}</p>
+              )}
             </div>
           </div>
 
@@ -196,7 +210,7 @@ const CreateListing = () => {
              hover:translate-y-[-2px] active:translate-y-[1px]
              hover:brightness-110"
             >
-              Publish Listing
+              {isSubmitting ? "Please wait..." : "Publish Listing"}
             </button>
           </div>
         </form>
