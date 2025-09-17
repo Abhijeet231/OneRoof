@@ -85,8 +85,8 @@ const updateListing = asyncHandler(async(req,res) => {
    if(title) listing.title = title;
    if(description) listing.description = description;
    if(price) listing.price = price;
-   if(location) listing.price = price;
-   if(country) listing.price = price;
+   if(location) listing.location = location;
+   if(country) listing.country= country;
 
    //Handle Image Changes
    if(req.file){
@@ -96,7 +96,10 @@ const updateListing = asyncHandler(async(req,res) => {
         throw new ApiError(500, "Image Upload failed")
     };
 
-    listing.image = cloudinaryRes.secure_url;
+    listing.image = {
+        url: cloudinaryRes.secure_url,
+        public_id: cloudinaryRes.public_id
+    }
 
    };
 

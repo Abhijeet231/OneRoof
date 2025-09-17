@@ -26,15 +26,6 @@ export const listingSchema = z.object({
     invalid_type_error: "Country must be a string",
   }).min(3, "Country required!"),
 
-  // image: z
-  //   .instanceof(File, { message: "Image file is required" })   // ✅ Use instanceof instead of z.custom
-  //   .refine((file) => file.type.startsWith("image/"), {
-  //     message: "File must be an image",
-  //   })
-  //   .refine((file) => file.size <= 5 * 1024 * 1024, {
-  //     message: "Image size must be under 5MB",
-  //   }),
-
   image: z
   .any()
   .refine((files) => files instanceof FileList && files.length > 0, {
@@ -51,4 +42,34 @@ export const listingSchema = z.object({
  
 });
 
+//Edit Listing SCheam
 
+
+export const editListingSchema = z.object({
+  title: z
+    .string()
+    .min(3, "Title must be at least 3 characters"),
+
+  description: z
+    .string()
+    .min(10, "Description must be at least 10 characters"),
+
+  price: z
+    .number({
+      required_error: "Price is required",
+      invalid_type_error: "Price must be a number",
+    })
+    .positive("Price must be greater than 0"),
+
+  location: z
+    .string()
+    .min(3, "Location is required"),
+
+  country: z
+    .string()
+    .min(3, "Country is required"),
+
+  image: z
+    .any()
+    .optional(), // ✅ only optional field
+});
