@@ -30,7 +30,11 @@ const router = createBrowserRouter([
                 path: "register",
                 element: <Register/>
             },
-            //Protected
+            {
+                path: "listings/:id",
+                element: <ShowListing/>
+            },
+            //Protected Routes
             {
                 element: <ProtectedRoute/>,
                 children: [
@@ -40,8 +44,8 @@ const router = createBrowserRouter([
                         path: "listings",
                         children:[
                             {index: true, element: <CreateListing/>},
-                            {path: ":id", element: <ShowListing/>},
                             {path:":id/edit", element: <EditListing/>}
+                           
                         ]    
                     },
                    

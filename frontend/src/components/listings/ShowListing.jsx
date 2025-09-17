@@ -2,19 +2,24 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
 import { toast } from "react-toastify";
-
+import { useAuth } from "@/components/provider/AuthProvider";
 
 const ShowListing = () => {
 
     const {id} = useParams(); // grabs the :id from the url
     const [listing,setListing] = useState(null);
 
+    const {currentUser} = useAuth();
+
     useEffect(() => {
         const fetchListing = async() => {
             try{
                 const res = await api.get(`/listings/${id}`);
                 setListing(res.data.message);
-                console.log(res);
+                console.log(res, "this is api response of listing");
+               
+                
+                
                 
             }catch(err){
                 console.log(err.response?.data || err.message, "Error Fetching Listing Details");
@@ -40,6 +45,9 @@ const ShowListing = () => {
     <h1 className="absolute top-4 right-4 bg-white/80 px-4 py-2 rounded-lg text-xl font-bold text-gray-800 shadow">
       {listing.title}
     </h1>
+
+    
+    
   </div>
 
   {/* Content */}
@@ -71,7 +79,21 @@ const ShowListing = () => {
     </div>
 
     {/* Book Button */}
-  <div className="pt-6 flex gap-4">
+  
+    {currentUser?._id === listing?.owner?._id  ? <div className="pt-6 flex gap-4">
+  <button className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-xl font-semibold shadow-md transition">
+    Edit Listing
+  </button>
+  <button className="flex-1 border-2 border-red-500 hover:bg-red-50 text-red-600 py-3 rounded-xl font-semibold shadow-sm transition">
+    Delete Listing
+  </button>
+</div>
+
+
+
+
+ : <div className="pt-6 flex gap-4">
+ 
   <button className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold shadow-md transition">
     Book Now
   </button>
@@ -79,7 +101,7 @@ const ShowListing = () => {
    Chat with Host
 </button>
 
-</div>
+</div> }
 
   </div>
 </div>
@@ -88,3 +110,5 @@ const ShowListing = () => {
 };
 
 export default ShowListing;
+
+

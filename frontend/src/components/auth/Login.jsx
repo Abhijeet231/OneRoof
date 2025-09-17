@@ -3,14 +3,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/schemas/loginSchema.js";// this means src/schemas/
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import api from "@/lib/api.js"; // this means src/lib/
+
 import { useAuth } from "@/components/provider/AuthProvider.jsx";// this means src/components
 
 
 
 const Login = () => {
   const navigate = useNavigate();
-  const {setToken} = useAuth();
+  const {login} = useAuth();
 
   const {
     register,
@@ -23,15 +23,12 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-    const res = await api.post("/users/login", data);
+    const res = await login(data);
 
-      const result = res.data; // this is the parsed data from axios 
-      if(!result) throw new Error("No Access Token Returned!")
-
-     setToken(result.data.accessToken);
-
+    if(!res?.data?.data?.user) throw new Error("Login Failed")
+     
       toast.success("🎉 Logged in successfully!");
-      console.log("LOGGED IN USER:", result);
+      console.log("LOGGED IN USER:", res);
 
       setTimeout(() => {
         navigate("/");
