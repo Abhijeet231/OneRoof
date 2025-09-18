@@ -1,15 +1,30 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
 import { toast } from "react-toastify";
 import { useAuth } from "@/components/provider/AuthProvider";
 import { Link } from "react-router-dom";
 
+
 const ShowListing = () => {
   const { id } = useParams(); // grabs the :id from the url
   const [listing, setListing] = useState(null);
-
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
+
+  //Handling Delete
+  const handleDelete = async () => {
+    if(!window.confirm("Are you sure you want to delete this listing?")) return;
+    try{
+      await api.delete(`/listings/${id}`);
+      toast.success("Listing Deleted Successfully!", {autoClose:2000});
+      navigate("/");
+    }catch(err){
+      toast.error("Failed to Delete Listing");
+      console.log(err.message, "failed to delete listing ");
+      
+    }
+  }
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -84,7 +99,9 @@ const ShowListing = () => {
               Edit Listing
             </Link>
 
-            <button className="flex-1 border-2 border-red-500 hover:bg-red-50 text-red-600 py-3 rounded-xl font-semibold shadow-sm transition">
+            <button
+            onClick={handleDelete}
+            className="flex-1 border-2 border-red-500 hover:bg-red-50 text-red-600 py-3 rounded-xl font-semibold shadow-sm transition">
               Delete Listing
             </button>
           </div>

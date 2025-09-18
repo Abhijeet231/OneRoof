@@ -66,7 +66,12 @@ const EditListing = () => {
     await api.put(`/listings/${id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+
+    toast.success("Listing Updated Successfully!", {autoClose: 2000});
+
+    
     navigate(`/listings/${id}`);
+    
   };
 
   return (
