@@ -3,7 +3,56 @@ import { ApiError } from "../utils/ApiError.js";
 import Listing from "../models/listing.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
+import axios from "axios";
+import countries from "i18n-iso-countries";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const enLocale = require("i18n-iso-countries/langs/en.json");
 
+countries.registerLocale(enLocale);
+
+const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN;
+
+
+//GeoCoding Helper Code
+const geocodeLocationV6 = async(location, country) => {
+    //Convert full countries name to ISO Alpha-2 code
+    const countryCode = countries.getAlpha2Code(country, "en");
+
+    if(!countryCode) {
+        countryCode = countries.alpha3ToAlpha2(country.toUpperCase());
+    }
+         
+    // Fallback: use raw input if still not found
+    const query = countryCode
+    ? `${location}, ${countryCode}`
+    : `${location}, ${country}`;
+    
+   const url = `https://api.mapbox.com/search/geocode/v6/forward`;
+
+   const params = {
+    q: query,
+    access_token: MAPBOX_TOKEN,
+    limit: 1,
+   
+   };
+
+
+   const res = await axios.get(url, {params});
+
+   if(!res.data.features || res.data.features.length === 0) {
+    console.error("Mapbox returned no result:", res.data);
+    throw new ApiError(400, "Could not find  location in", country, "please Check Spelling or Enter Valid Location");
+    
+   }
+
+  const feature = res.data.features[0];
+  
+  return{
+    type: feature.geometry.type,
+    coordinates: feature.geometry.coordinates,
+  };
+};
 
 
 //Get All Listing
@@ -32,8 +81,12 @@ const getListingsById = asyncHandler(async(req,res) => {
 
 //Create New Listing
 const createListing = asyncHandler(async(req,res) => {
-    
+
     const {title, description, price, location, country } = req.body;
+    console.log("Location:", location, "country:", country);
+    
+    
+    const geoData = await geocodeLocationV6(location, country);
 
    if(!req.file){
        throw new ApiError(400, "Image Required")
@@ -56,7 +109,11 @@ const createListing = asyncHandler(async(req,res) => {
         price,
         location,
         country,
-        owner: req.user._id 
+        owner: req.user._id ,
+        geometry: {
+            type: geoData.type,
+            coordinates: geoData.coordinates
+        },
     });
 
     await listing.save();
@@ -85,8 +142,18 @@ const updateListing = asyncHandler(async(req,res) => {
    if(title) listing.title = title;
    if(description) listing.description = description;
    if(price) listing.price = price;
-   if(location) listing.location = location;
-   if(country) listing.country= country;
+  if(location || country){
+    listing.location = location || listing.location;
+    listing.country = country || listing.country;
+
+    //Re-geocode if location or country chagned
+    const geoData = await geocodeLocationV6(listing.location, listing.country);
+    listing.geometry = {
+        type: geoData.type,
+        coordinates: geoData.coordinates
+    };
+    
+  }
 
    //Handle Image Changes
    if(req.file){
@@ -105,7 +172,7 @@ const updateListing = asyncHandler(async(req,res) => {
 
    //If no change at all
    if(listing.isModified() === false){
-    return res.status(400).json(new ApiResponse(400, "No Changes Detected"), listing);
+    return res.status(400).json(new ApiResponse(400, "No Changes Detected")); // here used to send listing after Detected"),listing
    };
 
    await listing.save();

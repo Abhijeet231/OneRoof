@@ -4,7 +4,7 @@ import api from "@/lib/api";
 import { toast } from "react-toastify";
 import { useAuth } from "@/components/provider/AuthProvider";
 import { Link } from "react-router-dom";
-
+import ListingMap from "@/components/map/ListingMap";
 
 const ShowListing = () => {
   const { id } = useParams(); // grabs the :id from the url
@@ -116,7 +116,13 @@ const ShowListing = () => {
           </div>
         )}
       </div>
+
+         <ListingMap geometry={listing.geometry}/>
+
     </div>
+
+      
+
   );
 };
 

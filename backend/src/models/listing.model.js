@@ -40,7 +40,18 @@ const listingSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
-    }
+    },
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number], // [longitude, latitude]
+            required: true
+        }
+    },
 });
 
 //Post Middleware
