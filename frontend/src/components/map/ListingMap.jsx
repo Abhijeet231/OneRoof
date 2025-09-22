@@ -6,7 +6,7 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const ListingMap = ({geometry}) => {
     return(
-        <div style={{height:"400px", width: "100%"}}>
+         <div className="w-full h-full">
          
          <Map
           initialViewState = {{
@@ -24,7 +24,7 @@ const ListingMap = ({geometry}) => {
               anchor="bottom"
 
             >
-               <div className="w-6 h-6 bg-red-600 rounded-full border-2 border-white shadow-lg"></div>
+             
 
             </Marker>
 

@@ -40,7 +40,7 @@ const ShowListing = () => {
   if (!listing) return <p>Loading...</p>;
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 space-y-10">
+    <div className="max-w-4xl mx-auto mt-10 space-y-10 ">
       {/* Property Card */}
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
         {/* Image with Title overlay */}
@@ -112,21 +112,26 @@ const ShowListing = () => {
       </div>
 
       {/* Map Section */}
-{/* Map Section - Enhanced Card */}
-<div className="max-w-3xl mx-auto mt-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition duration-300 bg-gradient-to-br from-white to-gray-50 border border-gray-200">
-  <div className="p-6 border-b">
+      <hr/>
+
+<div className="w-full max-w-[1200px] mx-auto mt-8 ">
+  {/* Text Section */}
+  <div className="mb-4 text-center mt-3">
     <h2 className="text-2xl font-semibold text-gray-900">
       Where you’ll be
     </h2>
-    <p className="text-gray-500 text-sm mt-1">
+    <p className="text-sm text-gray-500 mt-1">
       Explore the exact location on the map
     </p>
   </div>
 
-  <div className="h-[400px]">
+  {/* Map Section */}
+  <div className="w-3/4 h-[400px] mx-auto rounded-2xl overflow-hidden shadow-lg">
     <ListingMap geometry={listing.geometry} />
   </div>
 </div>
+
+
 
 
 
