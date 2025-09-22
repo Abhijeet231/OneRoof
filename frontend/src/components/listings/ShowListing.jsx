@@ -1,19 +1,21 @@
-
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
 import { toast } from "react-toastify";
 import { useAuth } from "@/components/provider/AuthProvider";
 import ListingMap from "@/components/map/ListingMap";
+import ShimmerShowListing from "@/components/shimmer/ShimmerShowListing"
 
 const ShowListing = () => {
   const { id } = useParams();
   const [listing, setListing] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this listing?")) return;
+    if (!window.confirm("Are you sure you want to delete this listing?"))
+      return;
     try {
       await api.delete(`/listings/${id}`);
       toast.success("Listing Deleted Successfully!", { autoClose: 2000 });
@@ -30,14 +32,19 @@ const ShowListing = () => {
         const res = await api.get(`/listings/${id}`);
         setListing(res.data.message);
       } catch (err) {
-        console.log(err.response?.data || err.message, "Error Fetching Listing Details");
+        console.log(
+          err.response?.data || err.message,
+          "Error Fetching Listing Details"
+        );
         toast.error("⚠️ Could not load listing details");
+      }finally{
+        setLoading(false);
       }
     };
     fetchListing();
   }, [id]);
 
-  if (!listing) return <p>Loading...</p>;
+  if(loading) return <ShimmerShowListing/>;
 
   return (
     <div className="max-w-4xl mx-auto mt-10 space-y-10 ">
@@ -58,7 +65,9 @@ const ShowListing = () => {
         {/* Content */}
         <div className="p-6 space-y-5">
           {/* Description */}
-          <p className="text-gray-700 text-lg leading-relaxed">{listing.description}</p>
+          <p className="text-gray-700 text-lg leading-relaxed">
+            {listing.description}
+          </p>
 
           {/* Price */}
           <p className="text-2xl font-semibold text-gray-900">
@@ -100,9 +109,12 @@ const ShowListing = () => {
             </div>
           ) : (
             <div className="pt-6 flex gap-4">
-              <button className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold shadow-md transition">
+              <Link
+                to={`/listings/${listing?._id}/book`} // make sure you have this route
+                className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold shadow-md transition text-center"
+              >
                 Book Now
-              </button>
+              </Link>
               <button className="flex-1 border-2 border-green-500 hover:bg-green-50 text-green-600 py-3 rounded-xl font-semibold shadow-sm transition flex items-center justify-center gap-2">
                 Chat with Host
               </button>
@@ -112,29 +124,25 @@ const ShowListing = () => {
       </div>
 
       {/* Map Section */}
-      <hr/>
+      <hr />
 
-<div className="w-full max-w-[1200px] mx-auto mt-8 ">
-  {/* Text Section */}
-  <div className="mb-4 text-center mt-3">
-    <h2 className="text-2xl font-semibold text-gray-900">
-      Where you’ll be
-    </h2>
-    <p className="text-sm text-gray-500 mt-1">
-      Explore the exact location on the map
-    </p>
-  </div>
+      <div className="w-full max-w-[1200px] mx-auto mt-8 ">
+        {/* Text Section */}
+        <div className="mb-4 text-center mt-3">
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Where you’ll be
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Explore the exact location on the map
+          </p>
+        </div>
 
-  {/* Map Section */}
-  <div className="w-3/4 h-[400px] mx-auto rounded-2xl overflow-hidden shadow-lg">
-    <ListingMap geometry={listing.geometry} />
-  </div>
-</div>
-
-
-
-
-
+        {/* Map Section */}
+        <div className="w-3/4 h-[400px] mx-auto rounded-2xl overflow-hidden shadow-lg">
+          <ListingMap geometry={listing.geometry} />
+        </div>
+      </div>
+ 
     </div>
   );
 };

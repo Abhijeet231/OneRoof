@@ -5,15 +5,21 @@ import "react-toastify/dist/ReactToastify.css";
 import Footer from "@/components/navbar/Footer.jsx";
 
 
+
 function App() {
- 
+
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
     <Navbar/>
-    <Outlet/>
+
+    <main className=" flex-1">
+       <Outlet/>
+    </main>
+
+
     <Footer/>
     <ToastContainer position="top-center" autoClose={3000}  transition={Zoom}/>
-   </>
+   </div>
 
   )
 }

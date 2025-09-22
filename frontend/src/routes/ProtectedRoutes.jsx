@@ -3,7 +3,7 @@ import { useAuth } from "@/components/provider/AuthProvider";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 
-export default function ProtectedRoute() {
+export default function ProtectedRoute({children}) {
     const {currentUser, loading} = useAuth();
 
     useEffect(() => {
@@ -20,5 +20,5 @@ export default function ProtectedRoute() {
     return <Navigate to= "/login" replace />
   }
 
-    return <Outlet/>
+    return children ? children : <Outlet/>;
 }

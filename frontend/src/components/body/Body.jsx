@@ -3,9 +3,12 @@ import Card from "@/components/card/Card.jsx";
 import api from "@/lib/api.js"; // ✅ use your configured axios instance
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import ShimmerBody from "@/components/shimmer/ShimmerBody";
+
 
 const Body = () => {
   const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,14 +23,18 @@ const Body = () => {
           "Error While Fetching Listingsxxxxx"
         );
         toast.error(
-          `⚠️ ${error.response?.data?.message || error.message}` ||
-            "Error While Fetching data from backend"
+          
+            "⚠️ Server Error"
         );
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
+  if(loading) return <ShimmerBody/>;
 
   return (
     <div className="mt-10 flex flex-wrap px-6 sm:px-4 md:px-5 lg:px-20">

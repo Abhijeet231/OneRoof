@@ -10,6 +10,7 @@ import Profile from "@/components/profile/Profile";
 import CreateListing from "@/components/listings/CreateListing";
 import ShowListing from "@/components/listings/ShowListing";
 import EditListing from "@/components/listings/EditListing";
+import BookListing from "@/components/listings/BookListing";
 
 
 const router = createBrowserRouter([
@@ -32,8 +33,13 @@ const router = createBrowserRouter([
             },
             {
                 path: "listings/:id",
-                element: <ShowListing/>
+                element: <ShowListing/>,
             },
+            {
+                path: "listings/:id/book",
+                element: <ProtectedRoute> <BookListing/> </ProtectedRoute>
+            },
+               
             //Protected Routes
             {
                 element: <ProtectedRoute/>,
