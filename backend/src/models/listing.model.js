@@ -52,6 +52,14 @@ const listingSchema = new mongoose.Schema({
             required: true
         }
     },
+
+    availability: {
+        startDate: Date,
+        endDate: Date
+    },
+    bookings: [
+        {type: mongoose.Schema.Types.ObjectId, ref: "Booking"}
+    ]
 });
 
 //Post Middleware

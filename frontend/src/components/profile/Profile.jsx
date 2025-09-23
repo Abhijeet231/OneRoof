@@ -1,8 +1,14 @@
-
+import { useAuth } from "@/components/provider/AuthProvider";
 
 const Profile = () => {
+  const { currentUser} = useAuth()
   return (
-    <div>Profile</div>
+    <div>
+     <h1>{currentUser?.userName}</h1>
+    <p>{currentUser?.email}</p>
+     
+      
+    </div>
   )
 }
 

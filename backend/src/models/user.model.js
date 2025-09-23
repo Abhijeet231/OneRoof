@@ -29,7 +29,24 @@ const userSchema = new mongoose.Schema({
     },
     refreshToken: {
         type: String
-    }
+    },
+
+    // Profile Section
+    about: {type: String, trim: true},
+    language: [{type: String}],
+    profileImage: {
+        url: {type: String},
+        public_id: {type: String}
+    },
+
+    // Host / Guest Differentiation
+    isHost: {type: Boolean, default: false},
+
+    // Verifications (for email/OTP)
+    emailVerified: {type: Boolean, default: false},
+    verificationToken: {type: String}, //for email link
+    otp: {type: String}, // if you choose OTP route
+    otpExpiry: {type: Date},
 }, 
 {timestamps: true}
 );
