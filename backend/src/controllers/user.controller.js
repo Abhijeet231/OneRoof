@@ -3,6 +3,7 @@ import {ApiError} from "../utils/ApiError.js";
 import User from "../models/user.model.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 
 
 
@@ -193,11 +194,74 @@ const refreshAccessToken = asyncHandler(async(req,res) => {
 
 });
 
+//Update User Profile
+const updateProfile = asyncHandler(async(req,res) => {
+
+    
+const {userName, email, fullName, password, about, language} = req.body;
+
+// Find User
+const user = await User.findById(req.user._id);
+if(!user){
+    throw new ApiError(404, "User not found")
+};
+
+//Update fileds if provided
+if(userName) user.userName = userName;
+if(email) user.email = email;
+if(fullName) user.fullName = fullName;
+if(about) user.about = about;
+if(language && Array.isArray(language)) user.language = language; // language must be an array
+if(password) user.password = password;
+
+// Handling Image Changes
+if(req.file){
+
+    //Delte old image if exists
+    if(user.profileImage?.public_id){
+        await deleteFromCloudinary(user.profileImage.public_id);
+    }
+
+    const cloudinaryRes = await uploadOnCloudinary(req.file.path);
+
+    if(!cloudinaryRes) {
+        throw new ApiError(500, "Image upload failed")
+    };
+
+    user.profileImage = {
+        url: cloudinaryRes.secure_url,
+        public_id: cloudinaryRes.public_id
+    };
+};
+
+// If no changes at all
+const hasChanges =
+    user.isModified('userName') ||
+    user.isModified('email') ||
+    user.isModified('fullName') ||
+    user.isModified('about') ||
+    user.isModified('language') ||
+    user.isModified('password') ||
+    req.file; // profileImage updated
+if(!hasChanges) return res.status(400).json(new ApiResponse(400, "No Changes Detected"));
+
+await user.save();
+
+const safeUser = await User.findById(req.user._id).select("-password -refreshToken");
+
+return res.status(200).json(new ApiResponse(200, "User Profile Updated Successfully", safeUser));
+
+
+});
+
+
+
 
 export {
     registerUser,
     loginUser,
     logoutUser,
     getCurrentUser,
-    refreshAccessToken
+    refreshAccessToken,
+    updateProfile
 }

@@ -44,7 +44,6 @@ const userSchema = new mongoose.Schema({
 
     // Verifications (for email/OTP)
     emailVerified: {type: Boolean, default: false},
-    verificationToken: {type: String}, //for email link
     otp: {type: String}, // if you choose OTP route
     otpExpiry: {type: Date},
 }, 

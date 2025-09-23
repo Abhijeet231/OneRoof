@@ -36,6 +36,7 @@ const createReview = asyncHandler(async (req, res) => {
       comment,
       rating,
       author: userId,
+      listing: listingId
     });
     await review.save({ session });
 

@@ -6,6 +6,7 @@ import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js
 import axios from "axios";
 import countries from "i18n-iso-countries";
 import { createRequire } from "module";
+import User from "../models/user.model.js";
 const require = createRequire(import.meta.url);
 const enLocale = require("i18n-iso-countries/langs/en.json");
 
@@ -117,6 +118,11 @@ const createListing = asyncHandler(async(req,res) => {
     });
 
     await listing.save();
+
+    //Update user to host if not already
+    if(!req.user.isHost){
+        await User.findByIdAndUpdate(req.user._id, {isHost: true});
+    }
 
     res.status(201).json(new ApiResponse(201, "listing created successfully", listing));
 
