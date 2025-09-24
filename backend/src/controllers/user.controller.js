@@ -4,6 +4,8 @@ import User from "../models/user.model.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
+import Listing from "../models/listing.model.js";
+import Review from "../models/review.model.js"
 
 
 
@@ -254,7 +256,42 @@ return res.status(200).json(new ApiResponse(200, "User Profile Updated Successfu
 
 });
 
+//Delete User 
+const deleteUser  = asyncHandler(async(req,res) => {
+    const user = await User.findById(req.user._id);
 
+    if(!user){
+        throw new ApiError(404, "User not found");
+    }
+
+    //Deleting all Reviews created by user
+    await Review.deleteMany({author: user._id});
+
+    //Deletign all  Listings created by user
+      
+    const listings = await Listing.find({ owner: user._id });
+    for (const listing of listings) {
+        // If listings have images on Cloudinary, clean them up
+        if (listing.images && listing.images.length > 0) {
+            for (const img of listing.images) {
+                if (img.public_id) {
+                    await deleteFromCloudinary(img.public_id);
+                }
+            }
+        }
+    }
+
+    await Listing.deleteMany({owner: user._id});
+
+     //Delete User and other related details
+     if(user.profileImage?.public_id){
+        await deleteFromCloudinary(user.profileImage.public_id);
+     }
+
+   const deletedUser = await User.findByIdAndDelete(user._id);
+
+    return res.status(200).json(new ApiResponse(200,{}, "User Deleted Successfully" ))
+})
 
 
 export {
@@ -263,5 +300,6 @@ export {
     logoutUser,
     getCurrentUser,
     refreshAccessToken,
-    updateProfile
+    updateProfile,
+    deleteUser
 }
