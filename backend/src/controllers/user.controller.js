@@ -144,8 +144,19 @@ return res
 
 //sending User Details
 const getCurrentUser = asyncHandler(async(req,res) => {
+    const currUser = await User.findById(req.user._id);
+
+    const ownedListings = await Listing.find({owner: currUser._id});
+
+  currUser.isHost = ownedListings.length > 0;
+
+  const userData = {
+    user: currUser,
+    listings: ownedListings.map(listing => listing._id),
+  };
+
     return res.status(200).json(
-        new ApiResponse(200, {user: req.user}, "Current user fetched Successfully")
+        new ApiResponse(200, {user: userData}, "Current user fetched Successfully")
     )
 });
 
