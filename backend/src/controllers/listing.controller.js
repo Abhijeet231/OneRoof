@@ -56,13 +56,22 @@ const geocodeLocationV6 = async(location, country) => {
 };
 
 
-//Get All Listing
-const getAllListing = asyncHandler(async(req,res) => {
-    const listings = await Listing.find().populate("owner", "userName email");
 
-    res.status(200)
-    .json(new ApiResponse(200, "All Listing Fetched", listings));
+
+//Get Listings 
+const getListings = asyncHandler(async (req, res) => {
+  if (req.query.ids) {
+    // Multiple IDs provided → fetch multiple listings
+    const ids = req.query.ids.split(",");
+    const listings = await Listing.find({ _id: { $in: ids } }).populate("owner", "userName email");
+    return res.status(200).json(new ApiResponse(200, { listings }, "Multiple Listings Fetched"));
+  }
+
+  // No IDs → fetch all listings
+  const listings = await Listing.find().populate("owner", "userName email");
+  return res.status(200).json(new ApiResponse(200,  {listings} , "All Listings Fetched"));
 });
+
 
 //Get Single Listing
 const getListingsById = asyncHandler(async(req,res) => {
@@ -216,9 +225,10 @@ const deleteListing = asyncHandler(async(req,res) => {
 
 
 export {
-    getAllListing,
+    
     getListingsById,
     createListing,
     updateListing,
-    deleteListing
+    deleteListing,
+    getListings
 }

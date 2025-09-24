@@ -1,10 +1,11 @@
 import { Router } from "express";
 import {
-  getAllListing,
+  getListings,
   getListingsById,
   createListing,
   updateListing,
-  deleteListing
+  deleteListing,
+
 } from "../controllers/listing.controller.js";
 
 import verifyJWT from "../middleware/auth.middleware.js";
@@ -21,13 +22,14 @@ const router = Router();
 
 
 router.route("/")
-.get(getAllListing)   //Get listing
+.get(getListings)   //Get listing
 .post(
   verifyJWT,
   validate(createListingSchema), // Post listing
   upload.single("image"),
   createListing
-);
+)
+
 
 
 router.route("/:id")

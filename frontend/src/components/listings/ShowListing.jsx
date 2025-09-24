@@ -92,7 +92,7 @@ const ShowListing = () => {
           </div>
 
           {/* Actions */}
-          {currentUser?._id === listing?.owner?._id ? (
+          {currentUser?.user?._id === listing?.owner?._id ? (
             <div className="pt-6 flex gap-4">
               <Link
                 to={`/listings/${listing?._id}/edit`}
