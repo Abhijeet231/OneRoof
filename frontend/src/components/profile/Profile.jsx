@@ -9,31 +9,53 @@ import { toast } from "react-toastify";
 
 
 const Profile = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, loading: authLoading } = useAuth();
   const [listings ,setListing] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  if(authLoading){
+    return (
+      <div className="text-center p-10 bg-red-300">
+        Loading User....
+      </div>
+    )
+  }
+
 console.log("Current user is : ", currentUser);
 
 
 useEffect(() => {
+   
+   if(!currentUser?.listings?.length){
+    setListing([])
+    setLoading(false);
+    return;
+   }
+
   const fetchListing = async() => {
-    if(!currentUser?.listings?.length) return;
 
     try{
       const res = await api.get(`/listings?ids=${currentUser.listings.join(",")}`);
       setListing(res?.data?.data?.listings);
-      console.log("This is RESSSSPONSSS", listings);
+      
       
     }catch(err){
       console.log("Failed to feetch all listings", err.message);
       toast.error(`⚠️ ${"Failed to fetch all Listings"}`)
       
+    }finally{
+      setLoading(false);
     }
   };
-  if(currentUser?.listings){
+ 
     fetchListing();
-  }
+  
 
 }, [currentUser]);
+
+if(loading){
+  return <div className="text-center p-10 bg-pink-200">User Details Loading.....</div>
+}
 
   return (
     <div className="max-w-5xl mx-auto p-6">
@@ -42,13 +64,13 @@ useEffect(() => {
         {/* Profile Image */}
         <div className="flex justify-center mb-6">
           <div className="w-28 h-28 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-4xl text-white shadow-md">
-            {currentUser.user?.fullName?.charAt(0) || "U"}
+            {currentUser?.fullName?.charAt(0) || "U"}
           </div>
         </div>
 
         {/* Welcome Text */}
         <h1 className="text-3xl font-bold mb-2 text-gray-800">
-          Welcome, {currentUser.user?.fullName || "User"}
+          Welcome, {currentUser?.fullName || "User"}
         </h1>
         <p className="text-gray-500 mb-6">
           Manage your profile and listings from here ✨
@@ -58,23 +80,23 @@ useEffect(() => {
         <div className="text-center space-y-2 max-w-md mx-auto text-gray-700">
           <p>
             <span className="font-semibold">User Name:</span>{" "}
-            {currentUser.user?.userName}
+            {currentUser?.userName}
           </p>
           <p>
-            <span className="font-semibold">Email:</span> {currentUser.user?.email}
+            <span className="font-semibold">Email:</span> {currentUser?.email}
           </p>
           <p>
             <span className="font-semibold">Full Name:</span>{" "}
-            {currentUser.user?.fullName}
+            {currentUser?.fullName}
           </p>
           <p>
             <span className="font-semibold">About:</span>{" "}
-            {currentUser.user?.about || "Not provided"}
+            {currentUser?.about || "Not provided"}
           </p>
           <p>
             <span className="font-semibold">Languages:</span>{" "}
-            {currentUser.user?.language?.length > 0
-              ? currentUser.user.language.join(", ")
+            {currentUser?.language?.length > 0
+              ? currentUser?.language.join(", ")
               : "Not provided"}
           </p>
         </div>
@@ -96,7 +118,7 @@ useEffect(() => {
       {/* Listings Section or Become Host */}
       
       <div>
-        {currentUser.user?.isHost ? (
+        {currentUser?.isHost ? (
           <>
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">
               Your Listings

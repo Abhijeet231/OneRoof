@@ -143,22 +143,29 @@ return res
 });
 
 //sending User Details
-const getCurrentUser = asyncHandler(async(req,res) => {
-    const currUser = await User.findById(req.user._id);
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const currUser = await User.findById(req.user._id).lean(); // lean() returns plain JS object
 
-    const ownedListings = await Listing.find({owner: currUser._id});
+  if (!currUser) {
+    return res.status(404).json(
+      new ApiResponse(404, null, "User not found")
+    );
+  }
 
-  currUser.isHost = ownedListings.length > 0;
+  const ownedListings = await Listing.find({ owner: currUser._id }).lean();
 
+  // flatten everything into one object
   const userData = {
-    user: currUser,
+    ...currUser,
+    isHost: ownedListings.length > 0,
     listings: ownedListings.map(listing => listing._id),
   };
 
-    return res.status(200).json(
-        new ApiResponse(200, {user: userData}, "Current user fetched Successfully")
-    )
+  return res.status(200).json(
+    new ApiResponse(200, { user: userData }, "Current user fetched successfully")
+  );
 });
+
 
 
 //Refresh Access Token

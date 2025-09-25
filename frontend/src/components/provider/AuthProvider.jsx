@@ -1,4 +1,4 @@
-import api from "@/lib/api.js"; // axios instance with { withCredentials: true }
+import api from "@/lib/api.js"; 
 import { createContext, useContext, useEffect, useState, useMemo } from "react";
 
 const AuthContext = createContext();
@@ -11,9 +11,9 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const res = await api.get("/users/me"); // backend verifies cookie
+        const res = await api.get("/users/me");
         if (res.data?.data?.user) {
-          setCurrentUser(res.data.data.user);
+          setCurrentUser(res.data?.data?.user); // already flat from backend
         } else {
           setCurrentUser(null);
         }
@@ -32,7 +32,7 @@ const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     const res = await api.post("/users/login", credentials);
     if (res.data?.data?.user) {
-      setCurrentUser(res.data.data.user);
+      setCurrentUser(res.data?.data?.user); // same structure
     }
     return res;
   };
@@ -50,19 +50,15 @@ const AuthProvider = ({ children }) => {
       async (error) => {
         const originalRequest = error.config || {};
 
-        // If access token expired (401) and request not retried yet
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
 
           try {
-            // Hit refresh endpoint to get a new access token
             await api.post("/users/refresh");
-
-            // Retry the original request after refresh
             return api(originalRequest);
           } catch (refreshError) {
             console.error("Refresh token failed", refreshError);
-            setCurrentUser(null); // force logout on refresh failure
+            setCurrentUser(null);
           }
         }
 

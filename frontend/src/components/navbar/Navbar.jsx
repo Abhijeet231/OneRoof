@@ -8,7 +8,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   return (
-    <nav className="bg-white shadow-md px-4 sm:px-6 lg:px-10 py-3 relative">
+    <nav className="bg-white shadow-md px-4 sm:px-6 lg:px-10 py-3 sticky top-0 z-50 ">
       <div className="flex items-center justify-between">
         {/* Logo */}
         <Link to="/">
