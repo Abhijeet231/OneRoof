@@ -144,25 +144,21 @@ return res
 
 //sending User Details
 const getCurrentUser = asyncHandler(async (req, res) => {
-  const currUser = await User.findById(req.user._id).lean(); // lean() returns plain JS object
-
+  const currUser = await User.findById(req.user._id) ;
   if (!currUser) {
     return res.status(404).json(
       new ApiResponse(404, null, "User not found")
     );
   }
 
-  const ownedListings = await Listing.find({ owner: currUser._id }).lean();
+  let listingIds = [];
 
-  // flatten everything into one object
-  const userData = {
-    ...currUser,
-    isHost: ownedListings.length > 0,
-    listings: ownedListings.map(listing => listing._id),
-  };
+  if(currUser.isHost){
+    listingIds = await Listing.find({owner: currUser._id}).distinct("_id");
+  }
 
   return res.status(200).json(
-    new ApiResponse(200, { user: userData }, "Current user fetched successfully")
+    new ApiResponse(200, { currUser,listingIds }, "Current user fetched successfully")
   );
 });
 

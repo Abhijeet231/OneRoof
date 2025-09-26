@@ -5,6 +5,7 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [listingIds, setListingIds] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Load session + user on mount
@@ -12,14 +13,18 @@ const AuthProvider = ({ children }) => {
     const checkSession = async () => {
       try {
         const res = await api.get("/users/me");
-        if (res.data?.data?.user) {
-          setCurrentUser(res.data?.data?.user); // already flat from backend
+        if (res.data?.data?.currUser) {
+          setCurrentUser(res.data?.data?.currUser); 
+          setListingIds(res?.data?.data?.listingIds);
+          console.log("This is RAW RESPNSE in AuthProvider", res);
+          
         } else {
           setCurrentUser(null);
         }
       } catch (err) {
         console.log("No active session", err.message);
         setCurrentUser(null);
+        setListingIds(null);
       } finally {
         setLoading(false);
       }
@@ -74,13 +79,14 @@ const AuthProvider = ({ children }) => {
   const contextValue = useMemo(
     () => ({
       currentUser,
+      listingIds,
       setCurrentUser,
       login,
       logout,
       isAuthenticated: !!currentUser,
       loading,
     }),
-    [currentUser, loading]
+    [currentUser,listingIds, loading]
   );
 
   return (
@@ -93,3 +99,4 @@ const AuthProvider = ({ children }) => {
 const useAuth = () => useContext(AuthContext);
 
 export { useAuth, AuthProvider };
+

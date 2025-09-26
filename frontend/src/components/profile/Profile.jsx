@@ -1,61 +1,42 @@
+
 import { useAuth } from "@/components/provider/AuthProvider";
 import api from "@/lib/api";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
-
-
-
-
 const Profile = () => {
-  const { currentUser, loading: authLoading } = useAuth();
-  const [listings ,setListing] = useState([]);
+  const { currentUser, listingIds} = useAuth();
+  const [listings, setListing] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  if(authLoading){
-    return (
-      <div className="text-center p-10 bg-red-300">
-        Loading User....
-      </div>
-    )
-  }
-
-console.log("Current user is : ", currentUser);
-
-
-useEffect(() => {
-   
-   if(!currentUser?.listings?.length){
-    setListing([])
-    setLoading(false);
-    return;
-   }
-
-  const fetchListing = async() => {
-
-    try{
-      const res = await api.get(`/listings?ids=${currentUser.listings.join(",")}`);
-      setListing(res?.data?.data?.listings);
-      
-      
-    }catch(err){
-      console.log("Failed to feetch all listings", err.message);
-      toast.error(`⚠️ ${"Failed to fetch all Listings"}`)
-      
-    }finally{
-      setLoading(false);
-    }
-  };
- 
-    fetchListing();
   
 
-}, [currentUser]);
+  useEffect(() => {
+    
+   
+    
+    const fetchListing = async () => {
+      try {
+       
+        const res = await api.get(`/listings?ids=${listingIds.join(",")}`);
+        
+        setListing(res?.data?.data?.listings);
+      } catch (err) {
+        console.log("❌ Failed to fetch all listings", err.message);
+        toast.error(`⚠️ Failed to fetch all Listings`);
+      } finally {
+        console.log("🏁 Setting loading to false");
+        setLoading(false);
+      }
+    };
 
-if(loading){
-  return <div className="text-center p-10 bg-pink-200">User Details Loading.....</div>
-}
+    fetchListing();
+  }, [listingIds]);
+
+  if (loading) {
+    return <div className="text-center p-10 bg-pink-200">User Details Loading.....</div>
+  }
 
   return (
     <div className="max-w-5xl mx-auto p-6">
@@ -99,6 +80,15 @@ if(loading){
               ? currentUser?.language.join(", ")
               : "Not provided"}
           </p>
+          {/* Debug info */}
+          <p>
+            <span className="font-semibold">Is Host:</span>{" "}
+            {currentUser?.isHost ? "Yes" : "No"}
+          </p>
+          <p>
+            <span className="font-semibold">Listings Count:</span>{" "}
+            {currentUser?.listings?.length || 0}
+          </p>
         </div>
 
         {/* Buttons */}
@@ -116,7 +106,6 @@ if(loading){
       <hr className="my-10" />
 
       {/* Listings Section or Become Host */}
-      
       <div>
         {currentUser?.isHost ? (
           <>
@@ -124,51 +113,60 @@ if(loading){
               Your Listings
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {/* Example listings – replace with dynamic data */}
-
-             {listings.map((listing) => 
- 
+              {listings.map((listing) => (
                 <Link
-                 key={listing._id}
-                 to={`/listings/${listing._id}`}
-                 className="block"
+                  key={listing._id}
+                  to={`/listings/${listing._id}`}
+                  className="block"
                 >
-                    
-                   <div
-                   className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
-                <img
-                  src= {listing?.image?.url}
-                  alt="Listing"
-                  className="w-full h-40 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg">
-                    {listing?.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm">₹{listing?.price} / night</p>
-                </div>
-              </div>  </Link>            
-
-             )}
-
-             
-             
+                  <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
+                    <img
+                      src={listing?.image?.url}
+                      alt="Listing"
+                      className="w-full h-40 object-cover"
+                    />
+                    <div className="p-4">
+                      <h3 className="font-semibold text-lg">
+                        {listing?.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm">₹{listing?.price} / night</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
           </>
         ) : (
           <div className="text-center">
             <p className="text-gray-500 mb-4">
-              You don’t have any listings yet.
+              You don't have any listings yet.
             </p>
-            <Link to= "/listings" className="px-6 py-3 rounded-lg bg-green-500 text-white font-medium shadow-md hover:bg-green-600 transition">
+            <Link 
+              to="/listings" 
+              className="px-6 py-3 rounded-lg bg-green-500 text-white font-medium shadow-md hover:bg-green-600 transition"
+            >
               🌟 Become a Host
             </Link>
           </div>
         )}
       </div>
-      
     </div>
   );
 };
 
 export default Profile;
+
+
+// import { useAuth } from "../provider/AuthProvider"
+
+// const Profile = () => {
+
+//   const {data} = useAuth()
+// console.log("this is useAuth data in Profile", data);
+
+//   return (
+//     <div>Hi i am profile </div>
+//   )
+// }
+
+// export default Profile

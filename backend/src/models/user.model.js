@@ -42,10 +42,10 @@ const userSchema = new mongoose.Schema({
     // Host / Guest Differentiation
     isHost: {type: Boolean, default: false},
 
-    // Verifications (for email/OTP)
-    emailVerified: {type: Boolean, default: false},
-    otp: {type: String}, // if you choose OTP route
-    otpExpiry: {type: Date},
+    // // Verifications (for email/OTP)
+    // emailVerified: {type: Boolean, default: false},
+    // otp: {type: String}, // if you choose OTP route
+    // otpExpiry: {type: Date},
 }, 
 {timestamps: true}
 );
