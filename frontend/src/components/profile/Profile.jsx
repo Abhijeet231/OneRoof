@@ -18,6 +18,10 @@ const Profile = () => {
     
     const fetchListing = async () => {
       try {
+        if(!listingIds || listingIds.length === 0){
+          setLoading(false);
+          return;
+        }
        
         const res = await api.get(`/listings?ids=${listingIds.join(",")}`);
         
@@ -87,7 +91,7 @@ const Profile = () => {
           </p>
           <p>
             <span className="font-semibold">Listings Count:</span>{" "}
-            {currentUser?.listings?.length || 0}
+            {listingIds?.length || 0}
           </p>
         </div>
 

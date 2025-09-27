@@ -5,7 +5,7 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [listingIds, setListingIds] = useState(null);
+  const [listingIds, setListingIds] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Load session + user on mount

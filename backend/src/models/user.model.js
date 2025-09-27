@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import Listing from "./listing.model.js";
+import Review from "./review.model.js";
+import { deleteFromCloudinary } from "../utils/cloudinary.js";
 
 
 const userSchema = new mongoose.Schema({
@@ -58,6 +61,25 @@ userSchema.pre('save', async function (next){
     next();
 });
 
+//Things after user deletes his account
+userSchema.post("findOneAndDelete", async function(user) {
+    if(user){
+        //delete all listings owned by user
+        const listings = await Listing.find({owner: user._id});
+
+        for(let listing of listings){
+            await Listing.findByIdAndDelete(listing._id);
+        }
+
+        await Review.deleteMany({author: user._id});
+
+        if(user.profileImage?.public_id){
+            await deleteFromCloudinary(user.profileImage.public_id);
+        }
+    }
+});
+
+
 //Checking Password
 userSchema.methods.isPasswordCorrect = async function (password){
     return await bcrypt.compare(password, this.password)
@@ -90,6 +112,7 @@ userSchema.methods.generateRefreshToken = function(){
         }
     )
 };
+
 
 
 

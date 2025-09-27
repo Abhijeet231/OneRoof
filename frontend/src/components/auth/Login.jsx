@@ -28,7 +28,7 @@ const Login = () => {
     if(!res?.data?.data?.user) throw new Error("Login Failed")
      
       toast.success("🎉 Logged in successfully!", {autoClose:2000});
-      console.log("LOGGED IN USER:", res);
+  
 
       setTimeout(() => {
         navigate("/");
