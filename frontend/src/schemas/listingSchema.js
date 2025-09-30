@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+//Create Listing SChema
 export const listingSchema = z.object({
   title: z.string({
     required_error: "Title is required",
@@ -42,9 +43,9 @@ export const listingSchema = z.object({
  
 });
 
+
+
 //Edit Listing SCheam
-
-
 export const editListingSchema = z.object({
   title: z
     .string()

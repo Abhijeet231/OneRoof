@@ -3,6 +3,7 @@ import {registerUser, loginUser, logoutUser, refreshAccessToken, getCurrentUser,
 import verifyJWT from "../middleware/auth.middleware.js";
 import validate from "../middleware/validate.middleware.js";
 import { loginSchema, signupSchema, updateUserSchema } from "../validators/user.validator.js"
+import { upload } from "../middleware/multer.middleware.js";
 
 const router = Router();
 
@@ -22,7 +23,10 @@ router.post('/refresh', refreshAccessToken);
 router.get("/me", verifyJWT, getCurrentUser);
 
 //Update user profile (protected route)
-router.put('/me', verifyJWT, validate(updateUserSchema), updateProfile);
+router.put('/me', 
+    verifyJWT,
+    upload.single("profileImage"),
+     validate(updateUserSchema), updateProfile);
 
 //Delete user 
 router.delete('/me',verifyJWT, deleteUser);

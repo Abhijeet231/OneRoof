@@ -37,10 +37,9 @@ const registerUser = asyncHandler(async(req,res) => {
     const existedUser = await User.findOne({
         $or:[{userName}, {email}]
     });
-   
-    if(existedUser){
-        throw new ApiError(409, "User Already Exists")
-    };
+   if(existedUser){
+       throw new ApiError(400, "User Already Exists")
+   };
 
     //Creating User and saving it to DB
     const user = await User.create({
@@ -83,6 +82,11 @@ const loginUser = asyncHandler(async(req,res) => {
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
+    let listingIds = [];
+    if(loggedInUser.isHost){
+        listingIds = await Listing.find({owner: loggedInUser._id}).distinct("_id");
+    }
+
     //Setting Up Cookie Options
     const options = {
         httpOnly: true,
@@ -98,7 +102,7 @@ const loginUser = asyncHandler(async(req,res) => {
         new ApiResponse(
             200,
             {
-                user: loggedInUser, accessToken, refreshToken
+                user: loggedInUser, listingIds ,accessToken, refreshToken
             },
             "User LoggedIn Successfully"
         )
@@ -222,35 +226,46 @@ if(!user){
     throw new ApiError(404, "User not found")
 };
 
-//Update fileds if provided
-if(userName) user.userName = userName;
-if(email) user.email = email;
-if(fullName) user.fullName = fullName;
-if(about) user.about = about;
-if(language && Array.isArray(language)) user.language = language; // language must be an array
+//Unique checks
+if(email && email !== user.email){
+    const emailExists = await User.findOne({email});
+    if(emailExists) throw new ApiError(400, "Email already in use");
+    user.email = email.toLowerCase();
+}
+
+if(userName && userName !== user.userName){
+    const userNameExists = await User.findOne({userName});
+    if(userNameExists) throw new ApiError(400, "Username already in use");
+    user.userName = userName;
+}
+
+//Update other fields if provided
+if(fullName && fullName !== user.fullName) user.fullName = fullName;
+if(about && about !== user.about) user.about = about;
+if (language && Array.isArray(language) && language.length > 0) {
+  user.language = language;
+}
+
 if(password) user.password = password;
 
-// Handling Image Changes
-if(req.file){
 
-    //Delte old image if exists
+//Handle Profile Image upload 
+if(req.file) {
+    const cloudinaryRes = await uploadOnCloudinary(req.file.path);
+    if(!cloudinaryRes) throw new ApiError(500, "Image Upload Failed");
+
+    //delete old image only after new one is uploaded
     if(user.profileImage?.public_id){
         await deleteFromCloudinary(user.profileImage.public_id);
     }
 
-    const cloudinaryRes = await uploadOnCloudinary(req.file.path);
-
-    if(!cloudinaryRes) {
-        throw new ApiError(500, "Image upload failed")
-    };
-
     user.profileImage = {
         url: cloudinaryRes.secure_url,
-        public_id: cloudinaryRes.public_id
+        public_id: cloudinaryRes.public_id,
     };
-};
+}
 
-// If no changes at all
+//Check if any changes were amde
 const hasChanges =
     user.isModified('userName') ||
     user.isModified('email') ||
@@ -259,13 +274,16 @@ const hasChanges =
     user.isModified('language') ||
     user.isModified('password') ||
     req.file; // profileImage updated
+
 if(!hasChanges) return res.status(400).json(new ApiResponse(400, "No Changes Detected"));
 
+//Save Changes
 await user.save();
 
+//Return safe user object
 const safeUser = await User.findById(req.user._id).select("-password -refreshToken");
 
-return res.status(200).json(new ApiResponse(200, "User Profile Updated Successfully", safeUser));
+return res.status(200).json(new ApiResponse(200,  safeUser ,"User Profile Updated Successfully"));
 
 
 });

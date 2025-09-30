@@ -11,6 +11,7 @@ import CreateListing from "@/components/listings/CreateListing";
 import ShowListing from "@/components/listings/ShowListing";
 import EditListing from "@/components/listings/EditListing";
 import BookListing from "@/components/listings/BookListing";
+import EditProfile from "@/components/profile/EditProfile";
 
 
 const router = createBrowserRouter([
@@ -45,6 +46,7 @@ const router = createBrowserRouter([
                 element: <ProtectedRoute/>,
                 children: [
                     {path: "profile", element: <Profile/>},
+                    {path: "profile/edit", element: <EditProfile/>},
                     {path: "settings", element: <AccountSetting/>},
                     {
                         path: "listings",

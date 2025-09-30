@@ -38,6 +38,9 @@ const AuthProvider = ({ children }) => {
     const res = await api.post("/users/login", credentials);
     if (res.data?.data?.user) {
       setCurrentUser(res.data?.data?.user); // same structure
+      setListingIds(res.data?.data?.listingIds)
+       
+       
     }
     return res;
   };

@@ -8,39 +8,38 @@ import { toast } from "react-toastify";
 const Profile = () => {
   const { currentUser, listingIds} = useAuth();
   const [listings, setListing] = useState([]);
-  const [loading, setLoading] = useState(true);
+ 
 
+  console.log("CURRENTUSER:", currentUser);
+  console.log("LISTINGIDS:", listingIds);
+  
   
 
+  
   useEffect(() => {
-    
    
     
     const fetchListing = async () => {
       try {
-        if(!listingIds || listingIds.length === 0){
-          setLoading(false);
-          return;
-        }
+     
        
-        const res = await api.get(`/listings?ids=${listingIds.join(",")}`);
+         const res = await api.get(`/listings?ids=${listingIds.join(",")}`);
+        console.log('THius is user LISTGSK', res);
         
         setListing(res?.data?.data?.listings);
+     
+       
+       
       } catch (err) {
-        console.log("❌ Failed to fetch all listings", err.message);
-        toast.error(`⚠️ Failed to fetch all Listings`);
-      } finally {
-        console.log("🏁 Setting loading to false");
-        setLoading(false);
-      }
+        console.log("❌ Error while fetching user details (host/not)", err.message);
+       
+      } 
     };
 
     fetchListing();
   }, [listingIds]);
 
-  if (loading) {
-    return <div className="text-center p-10 bg-pink-200">User Details Loading.....</div>
-  }
+ 
 
   return (
     <div className="max-w-5xl mx-auto p-6">
@@ -97,9 +96,9 @@ const Profile = () => {
 
         {/* Buttons */}
         <div className="flex justify-center gap-4 mt-8">
-          <button className="flex items-center gap-2 px-5 py-2 rounded-lg bg-blue-500 text-white font-medium shadow-md hover:bg-blue-600 transition">
+          <Link to= "/profile/edit"  className="flex items-center gap-2 px-5 py-2 rounded-lg bg-blue-500 text-white font-medium shadow-md hover:bg-blue-600 transition">
             ✏️ Edit Profile
-          </button>
+          </Link>
           <button className="flex items-center gap-2 px-5 py-2 rounded-lg bg-red-500 text-white font-medium shadow-md hover:bg-red-600 transition">
             🗑️ Delete Profile
           </button>
@@ -160,17 +159,3 @@ const Profile = () => {
 
 export default Profile;
 
-
-// import { useAuth } from "../provider/AuthProvider"
-
-// const Profile = () => {
-
-//   const {data} = useAuth()
-// console.log("this is useAuth data in Profile", data);
-
-//   return (
-//     <div>Hi i am profile </div>
-//   )
-// }
-
-// export default Profile
