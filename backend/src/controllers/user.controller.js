@@ -292,31 +292,52 @@ const deleteUser  = asyncHandler(async(req,res) => {
         throw new ApiError(404, "User not found");
     }
 
-    //Deleting all Reviews created by user
-    await Review.deleteMany({author: user._id});
+    //Get all listings with their images
+    const listings = await Listing.find({owner: user._id}).select('image');
 
-    //Deletign all  Listings created by user
-      
-    const listings = await Listing.find({ owner: user._id });
-    for (const listing of listings) {
-        // If listings have images on Cloudinary, clean them up
-        if (listing.images && listing.images.length > 0) {
-            for (const img of listing.images) {
-                if (img.public_id) {
-                    await deleteFromCloudinary(img.public_id);
-                }
-            }
-        }
+    //Collect all cloudinary public_ids to delete
+    const cloudinaryPromise = listings.filter(listing => listing.image?.public_id).map(listing => 
+        deleteFromCloudinary(listing.image.public_id).catch(err => 
+            console.log('Failed to delete listing images', listing.image.public_id, err)
+            
+        )
+    );
+ 
+    //Adding User profile image to the deletion array
+    if(user.profileImage?.public_id){
+        cloudinaryPromise.push(
+            deleteFromCloudinary(user.profileImage.public_id).catch(err => console.log("Failed to delete profile image", user.profileImage.public_id, err)
+            )
+        )
     }
 
+    //Executing all cloudinary deletions in parallel
+    if(cloudinaryPromise.length > 0){
+        await Promise.allSettled(cloudinaryPromise);
+    }
+      
+    //Deleting all reviews created by user
+    await Review.deleteMany({author: user._id});
+
+    //Deleting all Listings from database
     await Listing.deleteMany({owner: user._id});
 
-     //Delete User and other related details
-     if(user.profileImage?.public_id){
-        await deleteFromCloudinary(user.profileImage.public_id);
-     }
+     //Deleting the user 
+     const deletedUser = await User.findByIdAndDelete(user._id);
 
-   const deletedUser = await User.findByIdAndDelete(user._id);
+
+     // 8. Clear authentication cookies
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    });
+
+    res.clearCookie("refreshToken", {
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    });
 
     return res.status(200).json(new ApiResponse(200,{}, "User Deleted Successfully" ))
 })

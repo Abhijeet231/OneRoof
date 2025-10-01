@@ -1,23 +1,37 @@
 
 import { useAuth } from "@/components/provider/AuthProvider";
 import api from "@/lib/api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 const Profile = () => {
   const { currentUser, listingIds} = useAuth();
   const [listings, setListing] = useState([]);
+  const navigate = useNavigate();
  
 
   console.log("CURRENTUSER:", currentUser);
   console.log("LISTINGIDS:", listingIds);
   
+  const handleDelete = async() => {
+    if(!window.confirm("Are you sure you want to delete your ACCOUNT ? "))
+      return;
   
+  try{
+     await api.delete('/users/me');
+     toast.success("Account Deleted", {autoClose:1500});
+     navigate('/')
 
+  }catch(err) {
+    toast.error("Failed to Delete Account");
+    console.log(err.message, "Failed to delete Account");
+    
+  }
+};
+  
   
   useEffect(() => {
-   
     
     const fetchListing = async () => {
       try {
@@ -49,8 +63,8 @@ const Profile = () => {
         <div className="flex justify-center mb-6">
           <div className="w-28 h-28 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-4xl text-white shadow-md">
             {
-              // currentUser?.profileImage?.url ?  <img src={currentUser?.profileImage?.url} alt="Profile" /> : currentUser?.fullName?.charAt(0) || "U"
-              <img src={currentUser?.profileImage?.url} alt="pfp" className="w-full h-full object-cover rounded-full"/>
+              currentUser?.profileImage?.url ?  <img src={currentUser?.profileImage?.url} alt="Profile" className="w-full h-full object-cover rounded-full" /> : currentUser?.fullName?.charAt(0) || "U"
+              // <img src={currentUser?.profileImage?.url} alt={currentUser?.fullName?.charAt(0) } className="w-full h-full object-cover rounded-full"/>
             }
           </div>
         </div>
@@ -102,7 +116,9 @@ const Profile = () => {
           <Link to= "/profile/edit"  className="flex items-center gap-2 px-5 py-2 rounded-lg bg-blue-500 text-white font-medium shadow-md hover:bg-blue-600 transition">
             ✏️ Edit Profile
           </Link>
-          <button className="flex items-center gap-2 px-5 py-2 rounded-lg bg-red-500 text-white font-medium shadow-md hover:bg-red-600 transition">
+          <button
+          onClick={handleDelete}
+          className="flex items-center gap-2 px-5 py-2 rounded-lg bg-red-500 text-white font-medium shadow-md hover:bg-red-600 transition">
             🗑️ Delete Profile
           </button>
         </div>
@@ -116,7 +132,7 @@ const Profile = () => {
         {currentUser?.isHost ? (
           <>
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-              Your Listings
+              Your Listed Properties
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {listings.map((listing) => (
@@ -145,7 +161,7 @@ const Profile = () => {
         ) : (
           <div className="text-center">
             <p className="text-gray-500 mb-4">
-              You don't have any listings yet.
+              You don't have any listed Property yet.
             </p>
             <Link 
               to="/listings" 
