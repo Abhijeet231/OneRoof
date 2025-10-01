@@ -4,10 +4,11 @@ import { toast } from "react-toastify";
 import api from "@/lib/api";
 import { listingSchema } from "@/schemas/listingSchema.js";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../provider/AuthProvider";
 
 const CreateListing = () => {
   const navigate = useNavigate();
-  
+  const {refetchUser} = useAuth();
 
   //RHF stuff
   const {
@@ -40,14 +41,16 @@ const CreateListing = () => {
 
       const result = res.data;
 
-      toast.success("🎉 Listing Created successfully!");
+      toast.success("🎉 Listing Created successfully!", {autoClose:1500});
       console.log("New Listing:", result);
-
-      setTimeout(() => {
-        navigate("/");
-      }, 700);
-
+      
+      await refetchUser();
+      
       reset();
+     
+      navigate("/profile")
+      
+      
     } catch (error) {
       toast.error(`⚠️ ${error.message}`);
       console.log("Error While Creating New Listing", error);

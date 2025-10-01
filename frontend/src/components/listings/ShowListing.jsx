@@ -11,7 +11,7 @@ const ShowListing = () => {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, refetchUser } = useAuth();
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this listing?"))
@@ -19,6 +19,7 @@ const ShowListing = () => {
     try {
       await api.delete(`/listings/${id}`);
       toast.success("Listing Deleted Successfully!", { autoClose: 2000 });
+      await refetchUser();
       navigate("/");
     } catch (err) {
       toast.error("Failed to Delete Listing");

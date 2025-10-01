@@ -266,16 +266,12 @@ if(req.file) {
 }
 
 //Check if any changes were amde
-const hasChanges =
-    user.isModified('userName') ||
-    user.isModified('email') ||
-    user.isModified('fullName') ||
-    user.isModified('about') ||
-    user.isModified('language') ||
-    user.isModified('password') ||
-    req.file; // profileImage updated
+const hasUpdates = Object.keys(req.body).length > 0 || req.file;
 
-if(!hasChanges) return res.status(400).json(new ApiResponse(400, "No Changes Detected"));
+if (!hasUpdates) {
+  return res.status(400).json(new ApiResponse(400, "No data provided"));
+}
+
 
 //Save Changes
 await user.save();

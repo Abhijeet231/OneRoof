@@ -8,6 +8,20 @@ const AuthProvider = ({ children }) => {
   const [listingIds, setListingIds] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const refetchUser = async () => {
+    try{
+      const res = await api.get("/users/me");
+      if(res.data?.data?.currUser) {
+        setCurrentUser(res.data?.data?.currUser);
+        setListingIds(res?.data?.data?.listingIds);
+        return res.data?.data?.currUser;
+      }
+    } catch (error) {
+      console.error("Error fetching user data", error);
+      throw err;
+    }
+  }
+
   // Load session + user on mount
   useEffect(() => {
     const checkSession = async () => {
@@ -84,6 +98,7 @@ const AuthProvider = ({ children }) => {
       currentUser,
       listingIds,
       setCurrentUser,
+      refetchUser,
       login,
       logout,
       isAuthenticated: !!currentUser,

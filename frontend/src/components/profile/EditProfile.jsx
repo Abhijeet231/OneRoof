@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,30 +7,30 @@ import { editProfileSchema } from "@/schemas/editProfileSchema";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/provider/AuthProvider.jsx";
 
-
-
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 
-
-
 const EditProfile = () => {
-  let {currentUser, setCurrentUser} = useAuth();
+  let { currentUser, setCurrentUser } = useAuth();
   const navigate = useNavigate();
   const [previewImage, setPreviewImage] = useState(null);
-  const fileINputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
-    formState: {errors, isSubmitting},
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(editProfileSchema),
   });
 
+
+
   //Prefill form with current user data
   useEffect(() => {
-    if(!currentUser) return;
+    if (!currentUser) return;
 
     reset({
       userName: currentUser.userName ?? "",
@@ -41,107 +40,125 @@ const EditProfile = () => {
       language: Array.isArray(currentUser.language)
         ? currentUser.language.join(", ")
         : currentUser.language ?? "",
-      password: ""
+      password: "",
     });
-    //save image 
-    setPreviewImage(currentUser?.profileImage?.url ?? null)
-
-  },[currentUser,reset]);
+    //save image
+    setPreviewImage(currentUser?.profileImage?.url ?? null);
+    setSelectedFile(null);
+  }, [currentUser, reset]);
 
   // Handle Profile Image Section
   const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    const file = e.target.files?.[0];
-    if(!file) return;
-
-    if(!file.type.startsWith("image/")){
-      toast.error("Please select a valid image file", {autoClose: 2000});
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file", { autoClose: 2000 });
       return;
     }
-    if(file.size > MAX_IMAGE_SIZE) {
+    if (file.size > MAX_IMAGE_SIZE) {
       toast.error("Image size must be under 5mb");
       return;
     }
 
     setPreviewImage(URL.createObjectURL(file)); // THis is how the live image preview works
-    setValue("profileImage", file); 
+    setSelectedFile(file);
+    console.log("SELECTED NEWWWWWWWWW FILE : ", file);
+    
   };
 
-
   const onSubmit = async (data) => {
-    const formData = new FormData();
+
+
+    console.log("Form Data Submitted: ", data);
+    console.log("Profile Image File: ", data.profileImage);
     
-    if(data.userName) formData.append("userName", data.userName);
-    if(data.fullName) formData.append("fullName", data.fullName);
-    if(data.email) formData.append("email", data.email);
-    if(data.about) formData.append("about", data.about);
-    if(data.password) formData.append("password", data.password);
+    
+
+    const formData = new FormData();
+
+    if (data.userName) formData.append("userName", data.userName);
+    if (data.fullName) formData.append("fullName", data.fullName);
+    if (data.email) formData.append("email", data.email);
+    if (data.about) formData.append("about", data.about);
+    if (data.password) formData.append("password", data.password);
 
     // language -> send as multiple entries so backend receives array
-      if (data.language) {
-        const langs = data.language
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean);
-        langs.forEach((l) => formData.append("language", l));
-      };
+    if (data.language) {
+      const langs = data.language
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      langs.forEach((l) => formData.append("language", l));
+    }
 
-      if(data.profileImage) formData.append("profileImage", data.profileImage);
-
-      await api.put(`/users/me`, formData, {
-        headers: {"Content-Type": "multipart/form-data"},
-      });
-
-      toast.success("Form Updated Successfully", {autoClose: 2000});
+    if (selectedFile) {      
+      formData.append("profileImage", selectedFile);
+    }else{
+      console.log("No profile image to append");
       
+    }
+
+    try {
+    
+
+    const response =   await api.put(`/users/me`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log("Server Response****:",response.data );
+      
+      toast.success("Form Updated Successfully", { autoClose: 2000 });
       const updatedUser = await api.get("/users/me");
-      setCurrentUser(updatedUser.data?.data?.currUser)
+      setCurrentUser(updatedUser.data?.data?.currUser);
 
       navigate("/profile");
       reset();
-      
-
-
-  }
-
+    } catch (err) {
+      console.log(err.response?.data || err.message);
+      toast.error(`Update Failed: ${err.message}`);
+    }
+  };
 
   return (
-         <div className="max-w-2xl mx-auto p-6">
-          <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-            {/* Profile Image */}
-            <div className="flex justify-center mb-6 relative">
-              <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-emerald-500 shadow-md">
-                {previewImage ? (
-                  <img 
-                   src= {previewImage}
-                  alt="Profile Preview"
-                  className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-4xl bg-gradient-to-r from-blue-400 to-purple-500 text-white">
-                    {currentUser?.fullName?.charAt(0) ?? "U"}
-                  </div>
-                )}
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+        {/* Profile Image */}
+        <div className="flex justify-center mb-6 relative">
+          <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-emerald-500 shadow-md">
+            {previewImage ? (
+              <img
+                src={previewImage}
+                alt="Profile Preview"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-4xl bg-gradient-to-r from-blue-400 to-purple-500 text-white">
+                {currentUser?.fullName?.charAt(0) ?? "U"}
               </div>
-           {/* Upload Button Overlay */}
-           <button
-           type="button"
-           onClick={() => fileINputRef.current.click()}
-           className="absolute bottom-2 right-[40%] bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-full shadow-lg"
-           >
-                <i className="fa-regular fa-camera"></i>
-           </button>
-              
-           <input type="file"
-           accept="image/"
-           ref={fileINputRef}
-           className="hidden"
-           onChange={handleImageChange}
-           />
-            </div>
-           
-           {/* Form */}
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            )}
+          </div>
+          {/* Upload Button Overlay */}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current.click()}
+            className="absolute bottom-2 right-[40%] bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-full shadow-lg"
+          >
+            <i className="fa-regular fa-camera"></i>
+          </button>
+
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleImageChange}
+          />
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -278,5 +295,3 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
-
-

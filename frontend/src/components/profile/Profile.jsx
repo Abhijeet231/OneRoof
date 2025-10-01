@@ -48,7 +48,10 @@ const Profile = () => {
         {/* Profile Image */}
         <div className="flex justify-center mb-6">
           <div className="w-28 h-28 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-4xl text-white shadow-md">
-            {currentUser?.fullName?.charAt(0) || "U"}
+            {
+              // currentUser?.profileImage?.url ?  <img src={currentUser?.profileImage?.url} alt="Profile" /> : currentUser?.fullName?.charAt(0) || "U"
+              <img src={currentUser?.profileImage?.url} alt="pfp" className="w-full h-full object-cover rounded-full"/>
+            }
           </div>
         </div>
 
