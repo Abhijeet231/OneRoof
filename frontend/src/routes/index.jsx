@@ -12,6 +12,9 @@ import ShowListing from "@/components/listings/ShowListing";
 import EditListing from "@/components/listings/EditListing";
 import BookListing from "@/components/listings/BookListing";
 import EditProfile from "@/components/profile/EditProfile";
+import Chat from "@/components/chat/Chat";
+import UnderConstruction from "@/components/UnderConstruction";
+
 
 
 const router = createBrowserRouter([
@@ -40,6 +43,10 @@ const router = createBrowserRouter([
                 path: "listings/:id/book",
                 element: <ProtectedRoute> <BookListing/> </ProtectedRoute>
             },
+            {
+                path: "chats",
+                element: <ProtectedRoute> <Chat/></ProtectedRoute>
+            },
                
             //Protected Routes
             {
@@ -55,6 +62,9 @@ const router = createBrowserRouter([
                             {path:":id/edit", element: <EditListing/>}
                            
                         ]    
+                    },
+                    {
+                        path: "/under-construction", element: <UnderConstruction/>
                     },
                    
                 ]

@@ -63,6 +63,15 @@ const Navbar = () => {
                     >
                       Profile
                     </NavLink>
+
+                       <NavLink
+                      to="/chats"
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-50"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Messages 
+                    </NavLink>
+
                     <NavLink
                       to="/settings"
                       className="block px-4 py-2 text-gray-700 hover:bg-green-50"

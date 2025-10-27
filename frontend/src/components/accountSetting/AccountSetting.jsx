@@ -1,8 +1,8 @@
-
+import UnderConstruction from "../UnderConstruction"
 
 const AccountSetting = () => {
   return (
-    <div>AccountSetting</div>
+    <UnderConstruction/>
   )
 }
 

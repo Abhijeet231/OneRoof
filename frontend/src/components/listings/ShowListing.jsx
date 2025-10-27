@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "@/components/provider/AuthProvider";
 import ListingMap from "@/components/map/ListingMap";
 import ShimmerShowListing from "@/components/shimmer/ShimmerShowListing"
+import UnderConstruction from "../UnderConstruction";
 
 const ShowListing = () => {
   const { id } = useParams();
@@ -116,7 +117,9 @@ const ShowListing = () => {
               >
                 Book Now
               </Link>
-              <button className="flex-1 border-2 border-green-500 hover:bg-green-50 text-green-600 py-3 rounded-xl font-semibold shadow-sm transition flex items-center justify-center gap-2">
+              <button
+               onClick={() => navigate("/under-construction") }
+              className="flex-1 border-2 border-green-500 hover:bg-green-50 text-green-600 py-3 rounded-xl font-semibold shadow-sm transition flex items-center justify-center gap-2">
                 Chat with Host
               </button>
             </div>
