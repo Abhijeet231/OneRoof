@@ -43,10 +43,7 @@ const router = createBrowserRouter([
                 path: "listings/:id/book",
                 element: <ProtectedRoute> <BookListing/> </ProtectedRoute>
             },
-            {
-                path: "chats",
-                element: <ProtectedRoute> <Chat/></ProtectedRoute>
-            },
+            
                
             //Protected Routes
             {
