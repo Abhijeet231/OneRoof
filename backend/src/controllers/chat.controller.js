@@ -1,11 +1,9 @@
 import {asyncHandler} from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import axios from "axios";
-import User from "../models/user.model.js";
 import Chat from "../models/chat.model.js";
 import ChatMessage from "../models/chatMessage.model.js";
-import mongoose from "mongoose";
+
 
 //Create or Get one-on-one Chat
 export const createOrGetChat = asyncHandler(async(req,res) => {
