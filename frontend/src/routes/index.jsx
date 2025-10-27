@@ -12,7 +12,6 @@ import ShowListing from "@/components/listings/ShowListing";
 import EditListing from "@/components/listings/EditListing";
 import BookListing from "@/components/listings/BookListing";
 import EditProfile from "@/components/profile/EditProfile";
-import Chat from "@/components/chat/Chat";
 import UnderConstruction from "@/components/UnderConstruction";
 
 
