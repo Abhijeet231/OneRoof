@@ -78,6 +78,14 @@ const loginUser = asyncHandler(async(req,res) => {
         throw new ApiError(401, "Invalid Credentials")
     };
 
+
+    console.log("Backend Cookie Check:", {
+        accessToken: !!accessToken,
+        refreshToken: !!refreshToken,
+        options
+    });
+    
+
     const{accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
@@ -91,7 +99,8 @@ const loginUser = asyncHandler(async(req,res) => {
     const options = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production" ,
-        sameSite:"none"
+        sameSite:"none",
+        
     };
 
     return res

@@ -4,6 +4,10 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
+
+  console.log('RECIVED COokies in AUTH MIDDLEWARE:', req.cookies);
+  
+
   try {
     // Get token from cookie or header
     const token =
