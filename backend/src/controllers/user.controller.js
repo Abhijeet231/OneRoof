@@ -8,7 +8,7 @@ import Listing from "../models/listing.model.js";
 import Review from "../models/review.model.js"
 
 
-
+const isProduction = process.env.NODE_ENV === "production";
 
 //Generating Access and Refresh Token
 const generateAccessAndRefreshToken = async(userId) => {
@@ -79,12 +79,7 @@ const loginUser = asyncHandler(async(req,res) => {
     };
 
 
-    console.log("Backend Cookie Check:", {
-        accessToken: !!accessToken,
-        refreshToken: !!refreshToken,
-        options
-    });
-    
+
 
     const{accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
 
@@ -98,8 +93,8 @@ const loginUser = asyncHandler(async(req,res) => {
     //Setting Up Cookie Options
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production" ,
-        sameSite:"none",
+        secure: isProduction ,
+        sameSite: isProduction ? "none" : "Strict" ,
         
     };
 
@@ -143,8 +138,8 @@ const user =   await User.findByIdAndUpdate(
 
 const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "none"
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "strict"
 };
 
 return res
@@ -200,8 +195,8 @@ const refreshAccessToken = asyncHandler(async(req,res) => {
 
         const options = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "none"
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "strict"
         };
 
         const{accessToken, refreshToken:newRefreshToken} = await generateAccessAndRefreshToken(user._id);
@@ -338,14 +333,14 @@ const deleteUser  = asyncHandler(async(req,res) => {
      // 8. Clear authentication cookies
     res.clearCookie("accessToken", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none'
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "strict"
     });
 
     res.clearCookie("refreshToken", {
         httpOnly: true, 
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none'
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "strict"
     });
 
     return res.status(200).json(new ApiResponse(200,{}, "User Deleted Successfully" ))
