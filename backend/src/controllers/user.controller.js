@@ -91,7 +91,7 @@ const loginUser = asyncHandler(async(req,res) => {
     const options = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production" ,
-        sameSite:"strict"
+        sameSite:"none"
     };
 
     return res
@@ -135,7 +135,7 @@ const user =   await User.findByIdAndUpdate(
 const options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict"
+    sameSite: "none"
 };
 
 return res
@@ -192,7 +192,7 @@ const refreshAccessToken = asyncHandler(async(req,res) => {
         const options = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "strict"
+            sameSite: "none"
         };
 
         const{accessToken, refreshToken:newRefreshToken} = await generateAccessAndRefreshToken(user._id);
@@ -330,7 +330,7 @@ const deleteUser  = asyncHandler(async(req,res) => {
     res.clearCookie("accessToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
+        sameSite: 'none'
     });
 
     res.clearCookie("refreshToken", {
