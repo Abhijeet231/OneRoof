@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 
 const app = express();
 
+app.use(cookieParser());
 
 app.use(cors(
     {
@@ -15,7 +16,6 @@ app.use(cors(
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static("public"));
-app.use(cookieParser());
 
 // User Routes
 import userRouter from "./routes/user.router.js";
